@@ -78,36 +78,44 @@ public class SpliteratorEx {
             STOP_ON_LONGEST // when short is exhausted, then emit tuples where one element is certainly null
         }
 
-        private final Stream<T> stream1;
-        private final Stream<U> stream2;
+        private final Stream<T> tStream;
+        private final Stream<U> uStream;
         private final ExhaustMode exhaustMode;
         private ZipSpliterator zipper;
 
-        Zipper(Stream<T> stream1, Stream<U> stream2) {
-            this(stream1, stream2, ExhaustMode.STOP_ON_SHORTEST);
+        public Zipper(Stream<T> tStream, Stream<U> uStream) {
+            this(tStream, uStream, ExhaustMode.STOP_ON_SHORTEST);
         }
 
-        Zipper(Stream<T> stream1, Stream<U> stream2, ExhaustMode exhaustMode) {
-            this.stream1 = stream1;
-            this.stream2 = stream2;
+        public Zipper(Stream<T> tStream, Stream<U> uStream, ExhaustMode exhaustMode) {
+            this.tStream = tStream;
+            this.uStream = uStream;
             this.exhaustMode = exhaustMode;
         }
 
-        Tup2<Stream<T>, Stream<U>> resultStreams() {
+        /**
+         * @return what is left of the InnerStreams
+         */
+        public Tup2<Stream<T>, Stream<U>> resultStreams() {
             return new Tup2<>(zipper.firstState.restOfStream.get(), zipper.secondState.restOfStream.get());
         }
 
+        /**
+         * Start streaming, based on the inner streams.
+         * Can be called at most once
+         * @return a stream producing elements which are tuples of the inner streams values
+         */
         public Stream<Tup2<T, U>> stream() {
             if (zipper != null) {
                 throw new IllegalStateException("Cannot stream twice");
             }
-            zipper = new ZipSpliterator(stream1.spliterator(), stream2.spliterator());
+            zipper = new ZipSpliterator(tStream.spliterator(), uStream.spliterator());
             return StreamSupport.stream(zipper, false);
         }
 
-        class ZipSpliterator implements Spliterator<Tup2<T, U>> {
+        private class ZipSpliterator implements Spliterator<Tup2<T, U>> {
 
-            static class State<X> {
+            private static class State<X> {
                 Spliterator<X> spliterator;
                 boolean isExhausted;
                 Supplier<Stream<X>> restOfStream = () -> StreamSupport.stream(spliterator, false);
