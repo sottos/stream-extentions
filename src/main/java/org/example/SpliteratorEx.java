@@ -2,37 +2,54 @@ package org.example;
 
 import org.example.PatternMatching.Tup2;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Collections.emptyList;
+
 public class SpliteratorEx {
 
+    Zipper.ExhaustMode exhaustMode = Zipper.ExhaustMode.STOP_ON_SHORTEST;
     public static void main(String[] args) {
-        List<String> list1 = Arrays.asList("a", "b", "c", "d","e");
-        List<Integer> list2 = Arrays.asList(1, 2, 3);
-
-        zipFirstOnly(list1.stream(), list2.stream());
-        zipFirstOnly(list2.stream(), list1.stream());
-        zipFirstOnly(list2.stream(), Stream.of("en","to","tre"));
-        zipFirstOnly(list2.stream(), Stream.empty());
-        zipFirstOnly(Stream.empty(), list2.stream());
-        zipFirstOnly(Stream.empty(), Stream.empty());
-
-
-        zipAndShow(list1.stream(), list2.stream());
-        zipAndShow(list2.stream(), list1.stream());
-        zipAndShow(list2.stream(), Stream.of("en","to","tre"));
-
-
+        var ex = new SpliteratorEx();
+        ex.showEx();
+        ex.exhaustMode = Zipper.ExhaustMode.STOP_ON_LONGEST;
+        ex.showEx();
     }
 
-    private static <T,U> void zipAndShow(Stream<T> stringStream, Stream<U> integerStream) {
-        System.out.println("StartShow");
+    private void showEx() {
+        List<String> list1 = Arrays.asList("a", "b", "c", "d", "e");
+        List<Integer> list2 = Arrays.asList(1, 2, 3);
 
-        var zipper = new Zipper<>(stringStream, integerStream);
-        zipper.stream().forEach(tup -> System.out.println("First: " + tup.a() + ", Second: " + tup.b()));
+        zipFirstOnly(list1, list2);
+        zipFirstOnly(list2, list1);
+        zipFirstOnly(list2, List.of("en", "to", "tre"));
+        zipFirstOnly(list2, Arrays.asList("en", null, "to", "tre"));
+        zipFirstOnly(list2, emptyList());
+        zipFirstOnly(emptyList(), list2);
+        zipFirstOnly(emptyList(), emptyList());
+
+
+        zipAndShow(list1, list2);
+        zipAndShow(list2, list1);
+        zipAndShow(list2, List.of("en", "to", "tre"));
+        zipAndShow(list2, Arrays.asList("en", null, "to", "tre"));
+        zipAndShow(list2, emptyList());
+        zipAndShow(emptyList(), list2);
+        zipAndShow(emptyList(), emptyList());
+    }
+
+    private <T, U> void zipAndShow(Collection<T> tCollection, Collection<U> uCollection) {
+        System.out.println("StartShow with "  + tCollection + " and " + uCollection);
+
+        var zipper = new Zipper<>(tCollection.stream(), uCollection.stream(), exhaustMode);
+        zipper.stream().forEach(System.out::println);
 
         System.out.println("First left:");
         zipper.resultStreams().a().forEach(System.out::println);
@@ -40,11 +57,12 @@ public class SpliteratorEx {
         zipper.resultStreams().b().forEach(System.out::println);
         System.out.println("Finished");
     }
-    private static <T,U> void zipFirstOnly(Stream<T> stringStream, Stream<U> integerStream) {
-        System.out.println("StartFirstOnly");
 
-        var zipper = new Zipper<>(stringStream, integerStream);
-        zipper.stream().findAny().ifPresentOrElse(tup -> System.out.println("First: " + tup.a() + ", Second: " + tup.b()), () -> System.out.println("No items"));
+    private <T, U> void zipFirstOnly(Collection<T> tCollection, Collection<U> uCollection) {
+        System.out.println("StartFirstOnly with " + tCollection + " and " + uCollection);
+
+        var zipper = new Zipper<>(tCollection.stream(), uCollection.stream(), exhaustMode);
+        zipper.stream().findAny().ifPresentOrElse(System.out::println, () -> System.out.println("No item"));
 
         System.out.println("First left:");
         zipper.resultStreams().a().forEach(System.out::println);
@@ -57,13 +75,13 @@ public class SpliteratorEx {
     public static class Zipper<T, U> {
         public enum ExhaustMode {
             STOP_ON_SHORTEST,
-            STOP_ON_LONGEST // when short is exhausted, then send tuples where one element is certainly null
+            STOP_ON_LONGEST // when short is exhausted, then emit tuples where one element is certainly null
         }
 
         private final Stream<T> stream1;
         private final Stream<U> stream2;
         private final ExhaustMode exhaustMode;
-        private Tup2<Stream<T>, Stream<U>> resultStreams;
+        private ZipSpliterator zipper;
 
         Zipper(Stream<T> stream1, Stream<U> stream2) {
             this(stream1, stream2, ExhaustMode.STOP_ON_SHORTEST);
@@ -76,56 +94,80 @@ public class SpliteratorEx {
         }
 
         Tup2<Stream<T>, Stream<U>> resultStreams() {
-            return resultStreams;
+            return new Tup2<>(zipper.firstState.restOfStream.get(), zipper.secondState.restOfStream.get());
         }
 
         public Stream<Tup2<T, U>> stream() {
-            return StreamSupport.stream(new ZipSpliterator(stream1.spliterator(), stream2.spliterator()), false);
+            if (zipper != null) {
+                throw new IllegalStateException("Cannot stream twice");
+            }
+            zipper = new ZipSpliterator(stream1.spliterator(), stream2.spliterator());
+            return StreamSupport.stream(zipper, false);
         }
 
         class ZipSpliterator implements Spliterator<Tup2<T, U>> {
-            private final Spliterator<T> firstSpliterator;
-            private final Spliterator<U> secondSpliterator;
+
+            static class State<X> {
+                Spliterator<X> spliterator;
+                boolean isExhausted;
+                Supplier<Stream<X>> restOfStream = () -> StreamSupport.stream(spliterator, false);
+
+                State(Spliterator<X> spliterator) {
+                    this.spliterator = spliterator;
+                }
+
+                boolean tryAdvance() {
+                    if (!isExhausted) {
+                        isExhausted = !spliterator.tryAdvance(e -> this.lastElem = e);
+                    }
+                    if (isExhausted) {
+                        restOfStream = Stream::empty;
+                        lastElem = null;
+                    }
+                    return !isExhausted;
+                }
+
+                X lastElem;
+            }
+
+            private final State<T> firstState;
+            private final State<U> secondState;
+
 
             public ZipSpliterator(Spliterator<T> firstSpliterator, Spliterator<U> secondSpliterator) {
-                this.firstSpliterator = firstSpliterator;
-                this.secondSpliterator = secondSpliterator;
+                this.firstState = new State<>(firstSpliterator);
+                this.secondState = new State<>(secondSpliterator);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public boolean tryAdvance(Consumer<? super Tup2<T, U>> action) {
-                List<T> firstBackup = new ArrayList<>();
-                Tup2<T, U>[] acceptedItem = new Tup2[1];
 
-                var firstReturn = firstSpliterator.tryAdvance(firstItem -> {
-                    firstBackup.add(firstItem);
-                    var secondReturn = secondSpliterator.tryAdvance(secondItem ->
-                            action.accept(acceptedItem[0] = new Tup2<>(firstItem, secondItem)));
-                });
-                // This check implies both a check on first and second tryAdvance
-                if (acceptedItem[0] != null) {
-                    resultStreams = new Tup2<>(
-                            StreamSupport.stream(firstSpliterator, false),
-                            StreamSupport.stream(secondSpliterator, false));
-                    return true;
-                }
-                if (exhaustMode == ExhaustMode.STOP_ON_SHORTEST) {
-                    // Finished
-                    if (firstBackup.isEmpty()) {
-                        resultStreams = new Tup2<>(
-                                StreamSupport.stream(firstSpliterator, false),
-                                StreamSupport.stream(secondSpliterator, false));
-                    } else {
-                        resultStreams = new Tup2<>(
-                                Stream.concat(Stream.of(firstBackup.getFirst()), StreamSupport.stream(firstSpliterator, false)),
-                                StreamSupport.stream(secondSpliterator, false));
+                var firstExhausted = !firstState.tryAdvance();
+                var secondExhausted = !secondState.tryAdvance();
 
-                    }
+                if (firstExhausted && secondExhausted) {
                     return false;
-                } else {
-
                 }
+                if (firstExhausted != secondExhausted) {
+                    if (exhaustMode == ExhaustMode.STOP_ON_SHORTEST) {
+                        if (firstExhausted) {
+                            secondState.restOfStream = () -> Stream.concat(
+                                    Stream.of(secondState.lastElem),
+                                    StreamSupport.stream(secondState.spliterator, false));
+                        } else {
+                            firstState.restOfStream = () -> Stream.concat(
+                                    Stream.of(firstState.lastElem),
+                                    StreamSupport.stream(firstState.spliterator, false));
+                        }
+                        return false;
+                    }
+                }
+
+                action.accept(new Tup2<>(firstState.lastElem, secondState.lastElem));
+
+                return true;
+
             }
 
             @Override
@@ -135,13 +177,13 @@ public class SpliteratorEx {
 
             @Override
             public long estimateSize() {
-                return Math.min(firstSpliterator.estimateSize(), secondSpliterator.estimateSize());
+                return Math.min(firstState.spliterator.estimateSize(), secondState.spliterator.estimateSize());
             }
 
             @Override
             public int characteristics() {
-                return firstSpliterator.characteristics() & secondSpliterator.characteristics()
-                        & ~(Spliterator.SIZED | Spliterator.SUBSIZED);
+                return firstState.spliterator.characteristics() & secondState.spliterator.characteristics()
+                        & ~(Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.CONCURRENT);
             }
         }
     }
