@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -17,6 +18,13 @@ public class SpliteratorEx {
 
     Zipper.ExhaustMode exhaustMode = Zipper.ExhaustMode.STOP_ON_SHORTEST;
     public static void main(String[] args) {
+
+        var zipper = new Zipper<>(Stream.of("a","b","C"),
+                new Zipper<>(IntGenerator.generator(81, x -> x / 3),
+                        IntGenerator.generator(6, x -> x + 1)).stream());
+        zipper.stream().forEach(System.out::println);
+
+
         var ex = new SpliteratorEx();
         ex.showEx();
         ex.exhaustMode = Zipper.ExhaustMode.STOP_ON_LONGEST;
@@ -24,6 +32,7 @@ public class SpliteratorEx {
     }
 
     private void showEx() {
+
         List<String> list1 = Arrays.asList("a", "b", "c", "d", "e");
         List<Integer> list2 = Arrays.asList(1, 2, 3);
 
@@ -34,7 +43,6 @@ public class SpliteratorEx {
         zipFirstOnly(list2, emptyList());
         zipFirstOnly(emptyList(), list2);
         zipFirstOnly(emptyList(), emptyList());
-
 
         zipAndShow(list1, list2);
         zipAndShow(list2, list1);
@@ -71,6 +79,48 @@ public class SpliteratorEx {
         System.out.println("Finished");
     }
 
+    public static class IntGenerator {
+        public static Stream<Integer> generator(int start, UnaryOperator<Integer> f) {
+            return StreamSupport.stream(new IntSpliterator(start, f), false);
+        }
+
+        private static class IntSpliterator implements Spliterator<Integer> {
+
+            int currentValue;
+            UnaryOperator<Integer> f;
+
+            public IntSpliterator(int startValue, UnaryOperator<Integer> f) {
+                this.currentValue = startValue;
+                this.f = f;
+            }
+
+            @Override
+            public boolean tryAdvance(Consumer<? super Integer> action) {
+                try {
+                    action.accept(currentValue);
+                } finally {
+                    currentValue = f.apply(currentValue);
+                }
+                return true;
+            }
+
+            @Override
+            public Spliterator<Integer> trySplit() {
+                // Cannot split
+                return null;
+            }
+
+            @Override
+            public long estimateSize() {
+                return Long.MAX_VALUE;
+            }
+
+            @Override
+            public int characteristics() {
+                return ORDERED | NONNULL | IMMUTABLE | DISTINCT;
+            }
+        }
+    }
 
     public static class Zipper<T, U> {
         public enum ExhaustMode {
@@ -124,6 +174,7 @@ public class SpliteratorEx {
                     this.spliterator = spliterator;
                 }
 
+                @SuppressWarnings("BooleanMethodIsAlwaysInverted")
                 boolean tryAdvance() {
                     if (!isExhausted) {
                         isExhausted = !spliterator.tryAdvance(e -> this.lastElem = e);
@@ -147,7 +198,6 @@ public class SpliteratorEx {
                 this.secondState = new State<>(secondSpliterator);
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public boolean tryAdvance(Consumer<? super Tup2<T, U>> action) {
 
