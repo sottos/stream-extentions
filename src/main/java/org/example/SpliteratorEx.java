@@ -1,14 +1,15 @@
 package org.example;
 
-import org.example.PatternMatching.Tup2;
+import org.example.general.Tup2;
+import org.example.simple.IntGenerator;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -17,10 +18,16 @@ import static java.util.Collections.emptyList;
 public class SpliteratorEx {
 
     Zipper.ExhaustMode exhaustMode = Zipper.ExhaustMode.STOP_ON_SHORTEST;
+
     public static void main(String[] args) {
 
-        var zipper = new Zipper<>(Stream.of("a","b","C"),
-                new Zipper<>(IntGenerator.generator(81, x -> x / 3),
+        AtomicInteger a = new AtomicInteger(4);
+        var zipper = new Zipper<>(
+                new Zipper<>(
+                        Stream.of("a", "b", "C"),
+                        Stream.generate(a::getAndIncrement)).stream(),
+                new Zipper<>(
+                        IntGenerator.generator(81, x -> x / 3),
                         IntGenerator.generator(6, x -> x + 1)).stream());
         zipper.stream().forEach(System.out::println);
 
@@ -54,15 +61,15 @@ public class SpliteratorEx {
     }
 
     private <T, U> void zipAndShow(Collection<T> tCollection, Collection<U> uCollection) {
-        System.out.println("StartShow with "  + tCollection + " and " + uCollection);
+        System.out.println("StartShow with " + tCollection + " and " + uCollection);
 
         var zipper = new Zipper<>(tCollection.stream(), uCollection.stream(), exhaustMode);
-        zipper.stream().forEach(System.out::println);
+        zipper.stream().limit(10).forEach(System.out::println);
 
         System.out.println("First left:");
-        zipper.resultStreams().a().forEach(System.out::println);
+        zipper.resultStreams().a().limit(10).forEach(System.out::println);
         System.out.println("Second left:");
-        zipper.resultStreams().b().forEach(System.out::println);
+        zipper.resultStreams().b().limit(10).forEach(System.out::println);
         System.out.println("Finished");
     }
 
@@ -73,53 +80,10 @@ public class SpliteratorEx {
         zipper.stream().findAny().ifPresentOrElse(System.out::println, () -> System.out.println("No item"));
 
         System.out.println("First left:");
-        zipper.resultStreams().a().forEach(System.out::println);
+        zipper.resultStreams().a().limit(10).forEach(System.out::println);
         System.out.println("Second left:");
-        zipper.resultStreams().b().forEach(System.out::println);
+        zipper.resultStreams().b().limit(10).forEach(System.out::println);
         System.out.println("Finished");
-    }
-
-    public static class IntGenerator {
-        public static Stream<Integer> generator(int start, UnaryOperator<Integer> f) {
-            return StreamSupport.stream(new IntSpliterator(start, f), false);
-        }
-
-        private static class IntSpliterator implements Spliterator<Integer> {
-
-            int currentValue;
-            UnaryOperator<Integer> f;
-
-            public IntSpliterator(int startValue, UnaryOperator<Integer> f) {
-                this.currentValue = startValue;
-                this.f = f;
-            }
-
-            @Override
-            public boolean tryAdvance(Consumer<? super Integer> action) {
-                try {
-                    action.accept(currentValue);
-                } finally {
-                    currentValue = f.apply(currentValue);
-                }
-                return true;
-            }
-
-            @Override
-            public Spliterator<Integer> trySplit() {
-                // Cannot split
-                return null;
-            }
-
-            @Override
-            public long estimateSize() {
-                return Long.MAX_VALUE;
-            }
-
-            @Override
-            public int characteristics() {
-                return ORDERED | NONNULL | IMMUTABLE | DISTINCT;
-            }
-        }
     }
 
     public static class Zipper<T, U> {
@@ -153,6 +117,7 @@ public class SpliteratorEx {
         /**
          * Start streaming, based on the inner streams.
          * Can be called at most once
+         *
          * @return a stream producing elements which are tuples of the inner streams values
          */
         public Stream<Tup2<T, U>> stream() {

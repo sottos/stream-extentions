@@ -1,12 +1,10 @@
 package org.example;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.*;
 
-import static java.lang.StringTemplate.STR;
 import static java.util.function.Function.identity;
 
 public class GatherEx {
@@ -19,34 +17,34 @@ public class GatherEx {
         final String name;
 
         public WithIndexGatherer(String name) {
-            System.out.println(STR."Creates WithIndex(\{ name })" );
+            System.out.println("Creates WithIndex("+name+")" );
             this.name = name;
         }
 
         @Override
         public Supplier<AtomicInteger> initializer() {
-            System.out.println(STR. "Creates Initializer(\{ name })" );
+            System.out.println( "Creates Initializer("+name+")" );
             return () -> {
-                System.out.println(STR. "Invokes Initializer(\{ name })" );
+                System.out.println( "Invokes Initializer("+name+")" );
                 return new AtomicInteger(0);
             };
         }
 
         @Override
         public Integrator<AtomicInteger, T, Indexed<T>> integrator() {
-            System.out.println(STR. "Creates Integrator(\{ name })" );
+            System.out.println( "Creates Integrator("+name+")" );
             return (state, element, downstream) ->
             {
-                System.out.println(STR. "Invokes Integrator(\{ name })" );
+                System.out.println( "Invokes Integrator("+name+")" );
                 return downstream.push(new Indexed<>(state.getAndIncrement(), element));
             };
         }
 
         @Override
         public BiConsumer<AtomicInteger, Downstream<? super Indexed<T>>> finisher() {
-            System.out.println(STR. "Creates Finisher(\{ name })" );
+            System.out.println( "Creates Finisher("+name+")" );
             return (_, _) -> {
-                System.out.println(STR. "Invokes Finisher(\{ name })" );
+                System.out.println( "Invokes Finisher("+name+")" );
                 Gatherer.super.finisher();
             };
         }

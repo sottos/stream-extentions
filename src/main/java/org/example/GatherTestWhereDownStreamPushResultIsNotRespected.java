@@ -3,12 +3,8 @@ package org.example;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
-
-import static java.lang.StringTemplate.STR;
 
 public class GatherTestWhereDownStreamPushResultIsNotRespected {
 
@@ -17,37 +13,43 @@ public class GatherTestWhereDownStreamPushResultIsNotRespected {
                 .gather(logElement("splitText", splitText()))
                 .gather(logElement("GatherDoNothingReturnTrue", doNothingReturnTrue()))
                 .findFirst();
-        System.out.println(f1 +"\n");
+        System.out.println(f1 + "\n");
 
         Optional<String> ff1 = Stream.of("1234")
                 .flatMap(s -> s.chars().mapToObj(Character::toString))
                 .gather(logElement("GatherDoNothingReturnTrue", doNothingReturnTrue()))
                 .findFirst();
-        System.out.println(ff1 +"\n");
+        System.out.println(ff1 + "\n");
 
         Optional<String> f2 = Stream.of("efgh")
                 .gather(logElement("splitText", splitText()))
                 .gather(logElement("GatherDoNothingReturnTrue", doNothingReturnTrue()))
-                .peek(logElement("PeekDoNothing", s -> {}))
+                .peek(logElement("PeekDoNothing", s -> {
+                }))
                 .findFirst();
-        System.out.println(f2+"\n");
+        System.out.println(f2 + "\n");
 
         Optional<String> f3 = Stream.of("EFGH")
                 .gather(logElement("splitText", splitText()))
                 .gather(logElement("GatherDoNothingReturnTrue", doNothingReturnTrue()))
                 .gather(logElement("GatherDoNothing", doNothing()))
                 .findFirst();
-        System.out.println(f3+"\n");
+        System.out.println(f3 + "\n");
     }
 
     public static <T> Gatherer<T, ?, T> doNothing() {
         // This is correct impl of doNothing
         return Gatherer.of((_, element, downstream) -> downstream.push(element));
     }
+
     public static <T> Gatherer<T, ?, T> doNothingReturnTrue() {
         // This is erronous since it does not respect the downstream.push's return value
-        return Gatherer.of((_, element, downstream) -> { downstream.push(element); return true; });
+        return Gatherer.of((_, element, downstream) -> {
+            downstream.push(element);
+            return true;
+        });
     }
+
     public static Gatherer<String, ?, String> splitText() {
         Gatherer.Integrator<Void, String, String> integrator = (_, s, downstream) -> {
             Iterator<String> iterator = s.chars().mapToObj(Character::toString).iterator();
@@ -63,9 +65,8 @@ public class GatherTestWhereDownStreamPushResultIsNotRespected {
     }
 
 
-
     private static void println(String name, Object s) {
-        System.out.println(STR. "\{ name }('\{ s }')" );
+        System.out.println(name + "(" + s + ")");
     }
 
     private static <T> Consumer<T> logElement(String name, Consumer<? super T> c) {
