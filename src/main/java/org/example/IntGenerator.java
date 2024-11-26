@@ -1,6 +1,4 @@
-package org.example.simple;
-
-import org.example.SpliteratorEx;
+package org.example;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -9,7 +7,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class IntGenerator {
-    public static Stream<Integer> generator(int start, UnaryOperator<Integer> f) {
+    public static Stream<Integer> generate(int start, UnaryOperator<Integer> f) {
         return StreamSupport.stream(new IntSpliterator(start, f), false);
     }
 

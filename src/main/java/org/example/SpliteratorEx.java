@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.general.Tup2;
-import org.example.simple.IntGenerator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,8 +26,8 @@ public class SpliteratorEx {
                         Stream.of("a", "b", "C"),
                         Stream.generate(a::getAndIncrement)).stream(),
                 new Zipper<>(
-                        IntGenerator.generator(81, x -> x / 3),
-                        IntGenerator.generator(6, x -> x + 1)).stream());
+                        IntGenerator.generate(81, x -> x / 3),
+                        IntGenerator.generate(6, x -> x + 1)).stream());
         zipper.stream().forEach(System.out::println);
 
 

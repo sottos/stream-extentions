@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.simple.ZipWhen.ALL_CAN_ADVANCE;
+import static org.example.simple.ZipWhen.WHEN_ALL_CAN_ADVANCE;
 
 public class Zip3<T, U, V> {
     private final Stream<T> tStream;
@@ -17,7 +17,7 @@ public class Zip3<T, U, V> {
     private ZipSpliterator<T, Tup2<U, V>> tuvZipper;
 
     public Zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
-        this(tStream, uStream, vStream, ALL_CAN_ADVANCE);
+        this(tStream, uStream, vStream, WHEN_ALL_CAN_ADVANCE);
     }
 
     public Zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, ZipWhen zipWhen) {

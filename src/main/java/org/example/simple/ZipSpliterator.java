@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.simple.ZipWhen.ALL_CAN_ADVANCE;
+import static org.example.simple.ZipWhen.WHEN_ALL_CAN_ADVANCE;
 
 class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
 
@@ -48,7 +48,7 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
             return false;
         }
         if (firstCanAdvance != secondCanAdvance) {
-            if (zipWhen == ALL_CAN_ADVANCE) {
+            if (zipWhen == WHEN_ALL_CAN_ADVANCE) {
                 if (firstCanAdvance) {
                     firstStreamState.restOfStream = () -> Stream.concat(
                             Stream.of(firstStreamState.lastElem),

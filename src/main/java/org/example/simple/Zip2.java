@@ -5,7 +5,7 @@ import org.example.general.Tup2;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.simple.ZipWhen.ALL_CAN_ADVANCE;
+import static org.example.simple.ZipWhen.WHEN_ALL_CAN_ADVANCE;
 
 public class Zip2<T,U> {
     private final Stream<T> tStream;
@@ -14,7 +14,7 @@ public class Zip2<T,U> {
     private ZipSpliterator<T,U> zipper;
 
     public Zip2(Stream<T> tStream, Stream<U> uStream) {
-        this(tStream, uStream, ALL_CAN_ADVANCE);
+        this(tStream, uStream, WHEN_ALL_CAN_ADVANCE);
     }
 
     public Zip2(Stream<T> tStream, Stream<U> uStream, ZipWhen zipWhen) {
