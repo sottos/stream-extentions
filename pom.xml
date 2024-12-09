@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>J21Ex</artifactId>
+    <artifactId>stream-extentions</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -27,13 +27,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
                     <fork>true</fork>
-                    <executable>C:\Users\svein\projects\jdk\build\windows-x86_64-server-release\jdk\bin\javac</executable>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
 <!--                        <arg>&#45;&#45;add-exports=java.base/jdk.internal.vm=ALL-UNNAMED</arg>-->
-                        <arg>--add-opens=java.base/java.util.stream=ALL-UNNAMED</arg>
+<!--                        <arg>&#45;&#45;add-opens=java.base/java.util.stream=ALL-UNNAMED</arg>-->
                     </compilerArgs>
                 </configuration>
             </plugin>

@@ -8,13 +8,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.simple.ZipWhen.WHEN_ALL_CAN_ADVANCE;
+import static org.example.simple.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
 
 class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
 
     private final StreamState<T> firstStreamState;
     private final StreamState<U> secondStreamState;
-    private final ZipWhen zipWhen;
+    private final Zippers.ZipWhen zipWhen;
 
     StreamState<T> getFirstStreamState() {
         return firstStreamState;
@@ -24,7 +24,7 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
         return secondStreamState;
     }
 
-    public ZipSpliterator(Spliterator<T> firstSpliterator, Spliterator<U> secondSpliterator, ZipWhen zipWhen) {
+    public ZipSpliterator(Spliterator<T> firstSpliterator, Spliterator<U> secondSpliterator, Zippers.ZipWhen zipWhen) {
         this.firstStreamState = new StreamState<>(firstSpliterator);
         this.secondStreamState = new StreamState<>(secondSpliterator);
         this.zipWhen = zipWhen;
@@ -48,7 +48,7 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
             return false;
         }
         if (firstCanAdvance != secondCanAdvance) {
-            if (zipWhen == WHEN_ALL_CAN_ADVANCE) {
+            if (zipWhen == WHEN_ALL_HAVE_DATA) {
                 if (firstCanAdvance) {
                     firstStreamState.restOfStream = () -> Stream.concat(
                             Stream.of(firstStreamState.lastElem),

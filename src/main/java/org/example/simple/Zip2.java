@@ -5,19 +5,19 @@ import org.example.general.Tup2;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.simple.ZipWhen.WHEN_ALL_CAN_ADVANCE;
+import static org.example.simple.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
 
 public class Zip2<T,U> {
     private final Stream<T> tStream;
     private final Stream<U> uStream;
-    private final ZipWhen zipWhen;
+    private final Zippers.ZipWhen zipWhen;
     private ZipSpliterator<T,U> zipper;
 
     public Zip2(Stream<T> tStream, Stream<U> uStream) {
-        this(tStream, uStream, WHEN_ALL_CAN_ADVANCE);
+        this(tStream, uStream, WHEN_ALL_HAVE_DATA);
     }
 
-    public Zip2(Stream<T> tStream, Stream<U> uStream, ZipWhen zipWhen) {
+    public Zip2(Stream<T> tStream, Stream<U> uStream, Zippers.ZipWhen zipWhen) {
         this.tStream = tStream;
         this.uStream = uStream;
         this.zipWhen = zipWhen;
