@@ -3,6 +3,7 @@ package org.example.simple;
 import org.example.general.Tup2;
 
 import java.util.Spliterator;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -10,11 +11,12 @@ import java.util.stream.StreamSupport;
 
 import static org.example.simple.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
 
-class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
+class ZipSpliterator<T, U, V> implements Spliterator<V> {
 
     private final StreamState<T> firstStreamState;
     private final StreamState<U> secondStreamState;
     private final Zippers.ZipWhen zipWhen;
+    private final BiFunction<T,U,V> tupCreator;
 
     StreamState<T> getFirstStreamState() {
         return firstStreamState;
@@ -24,10 +26,11 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
         return secondStreamState;
     }
 
-    public ZipSpliterator(Spliterator<T> firstSpliterator, Spliterator<U> secondSpliterator, Zippers.ZipWhen zipWhen) {
+    public ZipSpliterator(Spliterator<T> firstSpliterator, Spliterator<U> secondSpliterator, BiFunction<T, U, V> tupCreator, Zippers.ZipWhen zipWhen) {
         this.firstStreamState = new StreamState<>(firstSpliterator);
         this.secondStreamState = new StreamState<>(secondSpliterator);
         this.zipWhen = zipWhen;
+        this.tupCreator = tupCreator;
     }
 
     /**
@@ -39,7 +42,7 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
 
 
     @Override
-    public boolean tryAdvance(Consumer<? super Tup2<T, U>> action) {
+    public boolean tryAdvance(Consumer<? super V> action) {
 
         var firstCanAdvance = firstStreamState.tryAdvance();
         var secondCanAdvance = secondStreamState.tryAdvance();
@@ -62,14 +65,14 @@ class ZipSpliterator<T, U> implements Spliterator<Tup2<T, U>> {
             }
         }
 
-        action.accept(new Tup2<>(firstStreamState.lastElem, secondStreamState.lastElem));
+        action.accept(tupCreator.apply(firstStreamState.lastElem, secondStreamState.lastElem));
 
         return true;
 
     }
 
     @Override
-    public Spliterator<Tup2<T, U>> trySplit() {
+    public Spliterator<V> trySplit() {
         return null;
     }
 

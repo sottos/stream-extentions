@@ -3,15 +3,18 @@ package org.example.simple;
 import org.example.general.Tup2;
 
 import java.util.Iterator;
+import java.util.function.BiFunction;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
-public class ZipGatherer<T, U> {
+public class ZipGatherer<T, U, V> {
 
     final Iterator<U> uIterator;
+    final BiFunction<T,U,V> tupCreator;
     final Zippers.ZipWhen zipWhen;
 
-    public ZipGatherer(Stream<U> uStream, Zippers.ZipWhen zipWhen) {
+    public ZipGatherer(Stream<U> uStream, BiFunction<T, U, V> tupCreator, Zippers.ZipWhen zipWhen) {
+        this.tupCreator = tupCreator;
         this.zipWhen = zipWhen;
         this.uIterator = uStream.iterator();
     }
@@ -25,13 +28,13 @@ public class ZipGatherer<T, U> {
      * @param downstream
      * @return
      */
-    boolean integrate(T tElement, Gatherer.Downstream<? super Tup2<T, U>> downstream) {
+    boolean integrate(T tElement, Gatherer.Downstream<? super V> downstream) {
         if (!downstream.isRejecting()) {
             if (uIterator.hasNext()) {
-                return downstream.push(new Tup2<>(tElement, uIterator.next()));
+                return downstream.push(tupCreator.apply(tElement, uIterator.next()));
             } else if (zipWhen == Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA) {
                 // More left of tStream since we have tElement
-                return downstream.push(new Tup2<>(tElement, null));
+                return downstream.push(tupCreator.apply(tElement, null));
             }
         }
         return false;
@@ -42,11 +45,11 @@ public class ZipGatherer<T, U> {
      *
      * @param downstream
      */
-    public void finish(Gatherer.Downstream<? super Tup2<T, U>> downstream) {
+    public void finish(Gatherer.Downstream<? super V> downstream) {
         if (zipWhen == Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA) {
             while (!downstream.isRejecting()
                     && uIterator.hasNext()
-                    && downstream.push(new Tup2<>(null, uIterator.next()))) {
+                    && downstream.push(tupCreator.apply(null, uIterator.next()))) {
             }
         }
     }
