@@ -27,17 +27,6 @@ public class Zip3<T, U, V> {
     }
 
     /**
-     * @return what is left of the InnerStreams
-     */
-    public Tup3<Stream<T>, Stream<U>, Stream<V>> resultStreams() {
-        Tup2<Stream<T>, Stream<Tup2<U, V>>> resultStreams = tuvZipper.resultStreams();
-        ZipSpliterator<U, V, Tup2<U, V>> uvZipSpliterator = (ZipSpliterator<U, V,Tup2<U, V>>) resultStreams.b().spliterator();
-        return new Tup3<>(resultStreams.a(),
-                uvZipSpliterator.getFirstStreamState().restOfStream.get(),
-                uvZipSpliterator.getSecondStreamState().restOfStream.get());
-    }
-
-    /**
      * Start streaming, based on the inner streams.
      * Can be called at most once
      *

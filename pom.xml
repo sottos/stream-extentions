@@ -30,11 +30,10 @@
                 <version>3.13.0</version>
                 <configuration>
                     <fork>true</fork>
-                    <compilerArgs>
-<!--                        <arg>&#45;&#45;enable-preview</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=java.base/jdk.internal.vm=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-opens=java.base/java.util.stream=ALL-UNNAMED</arg>-->
+                    <compilerArgs>--enable-preview
                     </compilerArgs>
+                    <source>24</source>
+                    <target>24</target>
                 </configuration>
             </plugin>
         </plugins>
