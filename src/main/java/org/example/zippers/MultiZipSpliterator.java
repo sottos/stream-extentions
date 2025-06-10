@@ -1,6 +1,5 @@
 package org.example.zippers;
 
-
 import java.util.Arrays;
 import java.util.OptionalLong;
 import java.util.Spliterator;
@@ -91,5 +90,4 @@ class MultiZipSpliterator<R> implements Spliterator<R> {
 
         X lastElem;
     }
-
 }

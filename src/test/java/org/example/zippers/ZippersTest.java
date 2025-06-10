@@ -1,71 +1,65 @@
 package org.example.zippers;
 
 import org.example.general.NumberedString;
-import org.example.general.Tup2;
 import org.example.general.Tup3;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.example.simple.Zippers.zip2;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.example.zippers.Zippers.zipped;
+import static org.example.zippers.Zippers.zipWith;
+
 
 class ZippersTest {
 
     @Test
-    void zipperTest() {
+    void zipperTest2() {
         System.out.println("Join two streams to a 2-tuple stream, terminate when shortest stream terminates");
 
         Zippers.zip(NumberedString::new,
-                Stream.iterate(1, x -> x + 1),
-                Stream.of("Per", "Pål", "Espen", "Prinsesse")
+                        Stream.iterate(1, x -> x + 1),
+                        Stream.of("Per", "Pål", "Espen", "Prinsesse")
                 )
                 .stream()
                 .forEach(System.out::println);
 
-        Zippers.zip(Tup3<String, Integer, String>::new,
-                Stream.of("Olsen", "Hansen"),
-                Stream.iterate(1, x -> x + 1),
-                Stream.of("Per", "Pål", "Espen", "Prinsesse")
+        Stream.of("Per", "Pål", "Espen", "Prinsesse")
+                .gather(zipWith((s, i) -> new NumberedString(i, s), Stream.iterate(1, x -> x + 1)))
+                .forEach(System.out::println);
+
+
+        Stream.of("Per", "Pål", "Espen", "Prinsesse")
+                .collect(zipped(Collectors.toList(), (s, i) -> new NumberedString(i, s), Stream.iterate(1, x -> x + 1)))
+                .forEach(System.out::println);
+    }
+    @Test
+    void zipperTest3() {
+        System.out.println("Join two streams to a 3-tuple stream, terminate when shortest stream terminates");
+
+        Zippers.zip(Tup3<Integer,String, String>::new,
+                        Stream.iterate(1, x -> x + 1),
+                        Stream.of("Per", "Pål", "Espen", "Prinsesse"),
+                        Stream.of("Hansen", "Hansen", "Nilsen")
                 )
-                        .stream()
-                        .forEach(System.out::println);
+                .stream()
+                .forEach(System.out::println);
 
-    }
+        Stream.of("Per", "Pål", "Espen", "Prinsesse")
+                .gather(zipWith(Tup3<String, Integer, String>::new,
+                        Stream.iterate(1, x -> x + 1),
+                        Stream.of("Olsen",  "Nilsen", "Konug")))
+                .forEach(System.out::println);
 
-    @Test
-    void testZip() {
-    }
 
-    @Test
-    void testZip1() {
-    }
+        Stream.of("Per", "Pål", "Espen", "Prinsesse")
+                .collect(zipped(
+                        Collectors.toList(),
+                        Tup3<String, Integer, String>::new,
+                        Stream.iterate(1, x -> x + 1),
+                        Stream.of("Olsen","AnnasSon","Hansen","Nilsen","Sigurdsson")))
+                .forEach(System.out::println);
 
-    @Test
-    void testZip2() {
-    }
-
-    @Test
-    void testZip3() {
-    }
-
-    @Test
-    void testZip4() {
-    }
-
-    @Test
-    void testZip5() {
-    }
-
-    @Test
-    void testZip6() {
-    }
-
-    @Test
-    void zipX() {
-    }
-
-    @Test
-    void testZipX() {
     }
 }
