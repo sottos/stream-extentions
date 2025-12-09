@@ -24,7 +24,7 @@ public class Zippers {
         WHEN_AT_LEAST_ONE_HAVE_DATA
     }
 
-    // GathererZippers
+    // GathererZippers, used in the midst of a chain map(...).zipWith((t,u) -> new Pair(t,u), uStream).....
 
     public static <T, U, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.TwoArgs<T, U, R> tupCreator, Stream<U> uStream) {
         return zipWith(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, uStream);
@@ -66,7 +66,7 @@ public class Zippers {
         );
     }
 
-    // Spliterator zippers
+    // Spliterator zippers, used at start of chain: zip((t,u) -> new Pair<>(t,u), streamT, streamU).stream()....
 
     public static <T, U, R> Zip<R> zip(Functions.TwoArgs<T, U, R> tupCreator, Stream<T> tStream, Stream<U> uStream) {
         return zip(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream);
@@ -108,7 +108,7 @@ public class Zippers {
         return new ZipX<R>(streams, tupCreator, zipWhen);
     }
 
-    // Collector zippers
+    // Collector zippers, map(...).collect(zipper((t,u) -> new Pair<>(t,u), streamU))
 
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
