@@ -47,12 +47,6 @@ public final class Zippers {
     public static <T, U, V> Zip2<T, U, V> zip2(Stream<T> tStream, Stream<U> uStream, BiFunction<T, U, V> tupCreator, ZipWhen zipWhen) {
         return new Zip2<>(tStream, uStream, tupCreator, zipWhen);
     }
-//    public static <T, U, V> Zip3<T,U,V> zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> v) {
-//        return zip3(tStream, uStream, v, WHEN_ALL_HAVE_DATA);
-//    }
-//    public static <T, U, V> Zip3<T,U, V> zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, ZipWhen zipWhen) {
-//        return new Zip3<>(tStream, uStream, vStream, zipWhen);
-//    }
 
     public enum ZipWhen {
         /**

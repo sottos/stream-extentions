@@ -12,7 +12,7 @@ import static org.example.simple.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
 
 public class Zip3<T, U, V> {
     private final Stream<T> tStream;
-    private final Zip2<U, V,Tup2<U,V>> uvZipper;
+    private final Zip2<U, V, Tup2<U,V>> uvZipper;
     private final Zippers.ZipWhen zipWhen;
     private ZipSpliterator<T, Tup2<U, V>, Tup3<T,U,V>> tuvZipper;
 

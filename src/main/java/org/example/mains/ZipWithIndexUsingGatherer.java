@@ -21,27 +21,28 @@ public class ZipWithIndexUsingGatherer {
     }
 
 
-
     private static void stringStringInt() {
-        System.out.println("Join three stream to a StringStringInt stream, terminate when shortest stream terminates");
+        System.out.println("Join three streams to a StringStringInt stream, terminate when shortest stream terminates");
 
         Stream
                 .of("Per", "Pål", "Espen", "Prinsesse")
-                .gather(zipWith(Stream.iterate(1, x -> x + 1), (s,i) -> new NumberedString(i, s)))
-                .gather(zipWith(Stream.of("Olsen","Nilsen","Pedersen","Solvik", "Jensen"),
-                        (ns,surname) -> new StringStringInt(ns.s(), surname, ns.i())))
+                .gather(zipWith(Stream.iterate(1, x -> x + 1), (s, i) -> new NumberedString(i, s)))
+                .gather(zipWith(Stream.of("Olsen", "Nilsen", "Pedersen", "Solvik", "Jensen"),
+                        (ns, surname) -> new StringStringInt(ns.s(), surname, ns.i())))
                 .forEach(System.out::println);
     }
+
     private static void numberedStringWithIndexBounded() {
         System.out.println("Join two stream to a NumberedString stream , terminate when shortest stream terminates");
 
         Stream
                 .of("Per", "Pål", "Espen", "Prinsesse")
-                .gather(zipWith(Stream.iterate(1, x -> x + 1), (s,i) -> new NumberedString(i, s)))
+                .gather(zipWith(Stream.iterate(1, x -> x + 1), (s, i) -> new NumberedString(i, s)))
                 .forEach(System.out::println);
     }
+
     private static void stringWithIndexBounded() {
-        System.out.println("Join two stream to a 2-tuple stream, terminate when shortest stream terminates");
+        System.out.println("Join two streams to a 2-tuple stream, terminate when shortest stream terminates");
 
         Stream
                 .of("Per", "Pål", "Espen", "Prinsesse")
