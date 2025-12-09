@@ -11,6 +11,12 @@ public class ZipGatherer<T, U, V> {
     final BiFunction<T, U, V> tupCreator;
     final Zippers.ZipWhen zipWhen;
 
+    /**
+     * Creates a gatherer for zipping uStream onto the main chain.
+     * @param uStream the stream of U-s to add to the upstream stream of T-s
+     * @param tupCreator function for building tuples
+     * @param zipWhen when to zip
+     */
     public ZipGatherer(Stream<U> uStream, BiFunction<T, U, V> tupCreator, Zippers.ZipWhen zipWhen) {
         this.tupCreator = tupCreator;
         this.zipWhen = zipWhen;

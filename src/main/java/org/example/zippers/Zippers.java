@@ -119,6 +119,7 @@ public class Zippers {
                 toArrayArgs(tupCreator)
         );
     }
+
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
     zipped(C collectorToExtend, Functions.ThreeArgs<T, U, V, JoinedInput> tupCreator, Stream<U> uStream, Stream<V> vStream) {
