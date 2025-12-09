@@ -4,12 +4,11 @@ import org.example.general.NumberedString;
 import org.example.general.Tup3;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.example.zippers.Zippers.zipped;
 import static org.example.zippers.Zippers.zipWith;
+import static org.example.zippers.Zippers.zipped;
 
 
 class ZippersTest {
