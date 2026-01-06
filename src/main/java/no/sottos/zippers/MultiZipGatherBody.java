@@ -1,12 +1,12 @@
-package org.example.zippers;
+package no.sottos.zippers;
 
-import org.example.zippers.Zippers.ZipWhen;
+import no.sottos.zippers.Zippers.ZipWhen;
 
 import java.util.Iterator;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
-import static org.example.zippers.Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA;
+import static no.sottos.zippers.Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA;
 
 public class MultiZipGatherBody<T, R> {
 

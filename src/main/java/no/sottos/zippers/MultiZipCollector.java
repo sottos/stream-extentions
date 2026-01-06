@@ -1,4 +1,4 @@
-package org.example.zippers;
+package no.sottos.zippers;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,8 +24,10 @@ public class MultiZipCollector
     final C collectorToExtend;
     final Iterator<?>[] iterators;
     final Functions.ArgsInArrayFunction<JoinedInput> tupCreator;
+    final Zippers.ZipWhen zipWhen;
 
-    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<JoinedInput> tupCreator) {
+    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<JoinedInput> tupCreator, Zippers.ZipWhen zipWhen) {
+        this.zipWhen = zipWhen;
         this.collectorToExtend = collectorToExtend;
         var copy = new HashSet<>(collectorToExtend.characteristics());
         copy.remove(CONCURRENT);
@@ -48,7 +50,13 @@ public class MultiZipCollector
     @Override
     public BiConsumer<ExtendedState<Accumulator>, Incoming> accumulator() {
         BiConsumer<Accumulator, JoinedInput> innerAccumulator = collectorToExtend.accumulator();
-        return (state, t) -> innerAccumulator.accept(state.x, createTup(state, t));
+        return (state, t) -> {
+
+            JoinedInput tup = createTup(state, t);
+            if (tup != null) {
+                innerAccumulator.accept(state.x, tup);
+            }
+        };
     }
 
     @Override
@@ -69,13 +77,24 @@ public class MultiZipCollector
         return characteristics;
     }
 
+    /**
+     * Create a resulting tupl, but if one of the iterators is finished, then return null.
+     */
     private JoinedInput createTup(ExtendedState<Accumulator> state, Incoming t) {
 
         Object[] streamValues = new Object[iterators.length + 1];
         streamValues[0] = t;
+        boolean terminated = false;
         for (int i = 0; i < iterators.length; ++i) {
-            streamValues[i + 1] = iterators[i].hasNext() ? iterators[i].next() : null;
+            if (! iterators[i].hasNext()) {
+                terminated = true;
+                streamValues[i + 1] = null;
+            } else {
+                streamValues[i + 1] = iterators[i].next();
+            }
         }
-        return tupCreator.apply(streamValues);
+
+        return (terminated && zipWhen == Zippers.ZipWhen.WHEN_ALL_HAVE_DATA) ?
+                null : tupCreator.apply(streamValues);
     }
 }

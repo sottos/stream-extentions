@@ -1,4 +1,4 @@
-package org.example.zippers;
+package no.sottos.zippers;
 
 public class Functions {
     @FunctionalInterface

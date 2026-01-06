@@ -1,11 +1,11 @@
-package org.example.zippers;
+package no.sottos.zippers;
 
 import java.util.Arrays;
 import java.util.OptionalLong;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import static org.example.zippers.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
+import static no.sottos.zippers.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
 
 class MultiZipSpliterator<R> implements Spliterator<R> {
 

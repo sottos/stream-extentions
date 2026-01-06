@@ -1,4 +1,4 @@
-package org.example.zippers;
+package no.sottos.zippers;
 
 import java.util.Arrays;
 import java.util.Spliterator;
@@ -8,7 +8,7 @@ import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.example.zippers.Functions.LambdaWrappers.toArrayArgs;
+import static no.sottos.zippers.Functions.LambdaWrappers.toArrayArgs;
 
 public class Zippers {
 
@@ -68,44 +68,44 @@ public class Zippers {
 
     // Spliterator zippers, used at start of chain: zip((t,u) -> new Pair<>(t,u), streamT, streamU).stream()....
 
-    public static <T, U, R> Zip<R> zip(Functions.TwoArgs<T, U, R> tupCreator, Stream<T> tStream, Stream<U> uStream) {
+    public static <T, U, R> Stream<R> zip(Functions.TwoArgs<T, U, R> tupCreator, Stream<T> tStream, Stream<U> uStream) {
         return zip(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream);
     }
 
-    public static <T, U, R> Zip<R> zip(Functions.TwoArgs<T, U, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream) {
-        return new Zip2<>(tStream, uStream, tupCreator, zipWhen);
+    public static <T, U, R> Stream<R> zip(Functions.TwoArgs<T, U, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream) {
+        return new Zip2<>(tStream, uStream, tupCreator, zipWhen).stream();
     }
 
-    public static <T, U, V, R> Zip<R> zip(Functions.ThreeArgs<T, U, V, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
+    public static <T, U, V, R> Stream<R> zip(Functions.ThreeArgs<T, U, V, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
         return zip(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream);
     }
 
-    public static <T, U, V, R> Zip<R> zip(Functions.ThreeArgs<T, U, V, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
-        return new Zip3<>(tStream, uStream, vStream, tupCreator, zipWhen);
+    public static <T, U, V, R> Stream<R> zip(Functions.ThreeArgs<T, U, V, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
+        return new Zip3<>(tStream, uStream, vStream, tupCreator, zipWhen).stream();
     }
 
-    public static <T, U, V, W, R> Zip<R> zip(Functions.FourArgs<T, U, V, W, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
+    public static <T, U, V, W, R> Stream<R> zip(Functions.FourArgs<T, U, V, W, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
         return zip(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream, wStream);
     }
 
-    public static <T, U, V, W, R> Zip<R> zip(Functions.FourArgs<T, U, V, W, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return new Zip4<>(tStream, uStream, vStream, wStream, tupCreator, zipWhen);
+    public static <T, U, V, W, R> Stream<R> zip(Functions.FourArgs<T, U, V, W, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
+        return new Zip4<>(tStream, uStream, vStream, wStream, tupCreator, zipWhen).stream();
     }
 
-    public static <T, U, V, W, X, R> Zip<R> zip(Functions.FiveArgs<T, U, V, W, X, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
+    public static <T, U, V, W, X, R> Stream<R> zip(Functions.FiveArgs<T, U, V, W, X, R> tupCreator, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
         return zip(tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream, wStream, xStream);
     }
 
-    public static <T, U, V, W, X, R> Zip<R> zip(Functions.FiveArgs<T, U, V, W, X, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return new Zip5<>(tStream, uStream, vStream, wStream, xStream, tupCreator, zipWhen);
+    public static <T, U, V, W, X, R> Stream<R> zip(Functions.FiveArgs<T, U, V, W, X, R> tupCreator, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
+        return new Zip5<>(tStream, uStream, vStream, wStream, xStream, tupCreator, zipWhen).stream();
     }
 
-    public static <R> Zip<R> zipX(Functions.ArgsInArrayFunction<R> tupCreator, Stream<?>... streams) {
-        return new ZipX<R>(streams, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA);
+    public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> tupCreator, Stream<?>... streams) {
+        return new ZipX<R>(streams, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA).stream();
     }
 
-    public static <R> Zip<R> zipX(Functions.ArgsInArrayFunction<R> tupCreator, ZipWhen zipWhen, Stream<?>... streams) {
-        return new ZipX<R>(streams, tupCreator, zipWhen);
+    public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> tupCreator, ZipWhen zipWhen, Stream<?>... streams) {
+        return new ZipX<R>(streams, tupCreator, zipWhen).stream();
     }
 
     // Collector zippers, map(...).collect(zipper((t,u) -> new Pair<>(t,u), streamU))
@@ -113,40 +113,68 @@ public class Zippers {
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
     zipped(C collectorToExtend, Functions.TwoArgs<T, U, JoinedInput> tupCreator, Stream<U> uStream) {
+        return zipped(collectorToExtend, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, uStream);
+    }
+
+    public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U>
+    Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
+    zipped(C collectorToExtend, Functions.TwoArgs<T, U, JoinedInput> tupCreator, ZipWhen zipWhen, Stream<U> uStream) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream},
-                toArrayArgs(tupCreator)
+                toArrayArgs(tupCreator),
+                zipWhen
         );
     }
 
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
     zipped(C collectorToExtend, Functions.ThreeArgs<T, U, V, JoinedInput> tupCreator, Stream<U> uStream, Stream<V> vStream) {
+        return zipped(collectorToExtend, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream);
+    }
+
+    public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V>
+    Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
+    zipped(C collectorToExtend, Functions.ThreeArgs<T, U, V, JoinedInput> tupCreator, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream},
-                toArrayArgs(tupCreator)
+                toArrayArgs(tupCreator),
+                zipWhen
         );
     }
 
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V, W>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
     zipped(C collectorToExtend, Functions.FourArgs<T, U, V, W, JoinedInput> tupCreator, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
+        return zipped(collectorToExtend, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream);
+    }
+
+    public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V, W>
+    Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
+    zipped(C collectorToExtend, Functions.FourArgs<T, U, V, W, JoinedInput> tupCreator, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream, wStream},
-                toArrayArgs(tupCreator)
+                toArrayArgs(tupCreator),
+                zipWhen
         );
     }
 
     public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V, W, X>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
     zipped(C collectorToExtend, Functions.FiveArgs<T, U, V, W, X, JoinedInput> tupCreator, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
+        return zipped(collectorToExtend, tupCreator, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream, xStream);
+    }
+
+    public static <T, JoinedInput, R, Accumulator, C extends Collector<JoinedInput, Accumulator, R>, U, V, W, X>
+    Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
+    zipped(C collectorToExtend, Functions.FiveArgs<T, U, V, W, X, JoinedInput> tupCreator, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream, wStream, xStream},
-                toArrayArgs(tupCreator)
+                toArrayArgs(tupCreator),
+                zipWhen
         );
     }
 
