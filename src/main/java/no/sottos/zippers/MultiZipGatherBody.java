@@ -11,11 +11,11 @@ import static no.sottos.zippers.Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA;
 public class MultiZipGatherBody<T, R> {
 
     final Iterator<?>[] iterators;
-    final Functions.ArgsInArrayFunction<R> tupCreator;
+    final Functions.ArgsInArrayFunction<R> combiner;
     final ZipWhen zipWhen;
 
-    public MultiZipGatherBody(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> tupCreator, ZipWhen zipWhen) {
-        this.tupCreator = tupCreator;
+    public MultiZipGatherBody(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, ZipWhen zipWhen) {
+        this.combiner = combiner;
         this.zipWhen = zipWhen;
         this.iterators = new Iterator<?>[streams.length];
         for (int i = 0; i < streams.length; ++i) {
@@ -28,7 +28,7 @@ public class MultiZipGatherBody<T, R> {
      * Will be called when a T - element from the upStream is ready to be sent further down the stream pipeline.
      * Will add the T element and a U element to a Tup2 and send that to the downstream
      */
-    boolean integrate(T tElement, Gatherer.Downstream<? super R> downstream) {
+    public boolean integrate(T tElement, Gatherer.Downstream<? super R> downstream) {
         if (!downstream.isRejecting()) {
             boolean atLeastOneCanAdvance = false;
             boolean allCanAdvance = true;
@@ -45,10 +45,10 @@ public class MultiZipGatherBody<T, R> {
             }
 
             if (allCanAdvance) {
-                return downstream.push(tupCreator.apply(streamValues));
+                return downstream.push(combiner.apply(streamValues));
             } else if (zipWhen == WHEN_AT_LEAST_ONE_HAVE_DATA) {
                 // More left of tStream since we have tElement
-                return downstream.push(tupCreator.apply(streamValues));
+                return downstream.push(combiner.apply(streamValues));
             }
         }
         return false;
@@ -75,7 +75,7 @@ public class MultiZipGatherBody<T, R> {
             }
             while (atLeastOneCanAdvance &&
                     !downStream.isRejecting() &&
-                    downStream.push(tupCreator.apply(streamValues)));
+                    downStream.push(combiner.apply(streamValues)));
         }
     }
 

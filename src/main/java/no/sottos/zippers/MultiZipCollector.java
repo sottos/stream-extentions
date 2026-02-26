@@ -14,7 +14,7 @@ import static java.util.stream.Collector.Characteristics.CONCURRENT;
 import static java.util.stream.Collector.Characteristics.IDENTITY_FINISH;
 
 public class MultiZipCollector
-        <Incoming, JoinedInput, Result, Accumulator, C extends Collector<JoinedInput, Accumulator, Result>>
+        <Incoming, CombinedInput, Result, Accumulator, C extends Collector<CombinedInput, Accumulator, Result>>
         implements Collector<Incoming, MultiZipCollector.ExtendedState<Accumulator>, Result> {
 
     public record ExtendedState<Accumulator>(Accumulator x, Iterator<?>[] iterators) {
@@ -23,10 +23,10 @@ public class MultiZipCollector
     final Set<Collector.Characteristics> characteristics;
     final C collectorToExtend;
     final Iterator<?>[] iterators;
-    final Functions.ArgsInArrayFunction<JoinedInput> tupCreator;
+    final Functions.ArgsInArrayFunction<CombinedInput> elementCombiner;
     final Zippers.ZipWhen zipWhen;
 
-    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<JoinedInput> tupCreator, Zippers.ZipWhen zipWhen) {
+    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<CombinedInput> elementCombiner, Zippers.ZipWhen zipWhen) {
         this.zipWhen = zipWhen;
         this.collectorToExtend = collectorToExtend;
         var copy = new HashSet<>(collectorToExtend.characteristics());
@@ -38,7 +38,7 @@ public class MultiZipCollector
         for (int i = 0; i < this.iterators.length; ++i) {
             this.iterators[i] = streams[i].iterator();
         }
-        this.tupCreator = tupCreator;
+        this.elementCombiner = elementCombiner;
 
     }
 
@@ -49,10 +49,10 @@ public class MultiZipCollector
 
     @Override
     public BiConsumer<ExtendedState<Accumulator>, Incoming> accumulator() {
-        BiConsumer<Accumulator, JoinedInput> innerAccumulator = collectorToExtend.accumulator();
+        BiConsumer<Accumulator, CombinedInput> innerAccumulator = collectorToExtend.accumulator();
         return (state, t) -> {
 
-            JoinedInput tup = createTup(state, t);
+            CombinedInput tup = combine(state, t);
             if (tup != null) {
                 innerAccumulator.accept(state.x, tup);
             }
@@ -78,23 +78,23 @@ public class MultiZipCollector
     }
 
     /**
-     * Create a resulting tupl, but if one of the iterators is finished, then return null.
+     * Create a resulting combinedInput, return null if termination reached
      */
-    private JoinedInput createTup(ExtendedState<Accumulator> state, Incoming t) {
+    private CombinedInput combine(ExtendedState<Accumulator> state, Incoming t) {
 
         Object[] streamValues = new Object[iterators.length + 1];
         streamValues[0] = t;
-        boolean terminated = false;
+        boolean atLeastOneTerminated = false;
         for (int i = 0; i < iterators.length; ++i) {
             if (! iterators[i].hasNext()) {
-                terminated = true;
+                atLeastOneTerminated = true;
                 streamValues[i + 1] = null;
             } else {
                 streamValues[i + 1] = iterators[i].next();
             }
         }
 
-        return (terminated && zipWhen == Zippers.ZipWhen.WHEN_ALL_HAVE_DATA) ?
-                null : tupCreator.apply(streamValues);
+        return (atLeastOneTerminated && zipWhen == Zippers.ZipWhen.WHEN_ALL_HAVE_DATA) ?
+                null : elementCombiner.apply(streamValues);
     }
 }
