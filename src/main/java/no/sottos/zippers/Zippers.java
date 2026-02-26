@@ -78,7 +78,7 @@ public class Zippers {
          * The zipping will proceed when at least one underlying stream can advance.
          * When one stream is exhausted, emit null elements for that stream until the others are exhausted
          */
-        WHEN_AT_LEAST_ONE_HAVE_DATA;
+        WHEN_AT_LEAST_ONE_HAVE_DATA
     }
     
     // Spliterator based zippers used at pipeline start up, zip((t,u) -> combined(t,u), tStream, uStream)...
@@ -139,11 +139,11 @@ public class Zippers {
     }
 
     public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> combiner, Stream<?>... streams) {
-        return new MultiZipSpliterator.ZipX<R>(streams, combiner, ZipWhen.WHEN_ALL_HAVE_DATA).stream();
+        return new MultiZipSpliterator.ZipX<>(streams, combiner, ZipWhen.WHEN_ALL_HAVE_DATA).stream();
     }
 
     public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> combiner, ZipWhen zipWhen, Stream<?>... streams) {
-        return new MultiZipSpliterator.ZipX<R>(streams, combiner, zipWhen).stream();
+        return new MultiZipSpliterator.ZipX<>(streams, combiner, zipWhen).stream();
     }
 
     // Gatherer based zippers, used in the midst of a chain, tStream.gather(zipWith((t,u) -> combine(t,u), uStream)).....

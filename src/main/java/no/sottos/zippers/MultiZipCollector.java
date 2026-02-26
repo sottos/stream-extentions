@@ -61,7 +61,7 @@ public class MultiZipCollector
 
     @Override
     public BinaryOperator<ExtendedState<Accumulator>> combiner() {
-        return (s1, s2) -> {
+        return (_, _) -> {
             throw new IllegalStateException("This is not a concurrent stream collector");
         };
     }
@@ -80,8 +80,8 @@ public class MultiZipCollector
     /**
      * Create a resulting combinedInput, return null if termination reached
      */
+    @SuppressWarnings("unused")
     private CombinedInput combine(ExtendedState<Accumulator> state, Incoming t) {
-
         Object[] streamValues = new Object[iterators.length + 1];
         streamValues[0] = t;
         boolean atLeastOneTerminated = false;

@@ -76,8 +76,8 @@ public class PipelineTest {
         // A simple stateless gatherer that triples values
         Gatherer<Integer, Void, Integer> triple =
                 Gatherer.of(
-                        (state, item, downstream) -> downstream.push(item * 3),
-                        (state, downstream) -> {
+                        (_, item, downstream) -> downstream.push(item * 3),
+                        (_, _) -> {
                         }
                 );
 
