@@ -206,4 +206,17 @@ public class PipelineTest {
                 .gather(pipeline).toList();
         assertEquals(List.of("CCC","CCC!","DDDD","DDDD!"), resultList);
     }
+    @Test
+    void filterThenMapAsReadme() {
+        var pipeline = Pipeline.<Integer>start()
+                .map(x -> x + 1)
+                .filter(x -> x % 2 == 0)
+                .toGatherer();
+
+        var result = Stream.of(1, 2, 3)
+                .gather(pipeline)
+                .toList();
+        assertEquals(List.of(2, 4), result);
+    }
+
 }

@@ -83,7 +83,7 @@ var pipeline = Pipeline.<Integer>start()
 var result = Stream.of(1, 2, 3)
         .gather(pipeline)
         .toList();
-// [2]
+// [2,4]
 ```
 
 Pipelines can be combined using `.then(...)`.
