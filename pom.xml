@@ -9,6 +9,33 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
+    <name>stream-extentions</name>
+    <description>Small utilities for hopefully working with Java Streams in a more expressive way.</description>
+    <url>https://github.com/sottos/stream-extentions</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>sottos</id>
+            <name>Svein Otto</name>
+            <url>https://github.com/sottos</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/sottos/stream-extentions</url>
+        <connection>scm:git:https://github.com/sottos/stream-extentions.git</connection>
+        <developerConnection>scm:git:https://github.com/sottos/stream-extentions.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
