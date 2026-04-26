@@ -4,23 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="463efde6-cabe-474f-8762-ed27de2e6f99" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/GatherEx.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/GatherTestDownStreamHandling.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/GatherTestFinisher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/GatherTestTakeWhile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/GatherTestWhereDownStreamPushResultIsNotRespected.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/PatternMatching.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/RecordExes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/SpliteratorEx.java" afterDir="false" />
+    <list default="true" id="463efde6-cabe-474f-8762-ed27de2e6f99" name="Changes" comment="Added settings.xml to the publishing maven build using publish.yml">
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <list id="3dab7b4f-c14c-4c43-b953-d6b50b8a4a61" name="not to be checked in" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,54 +19,114 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Record" />
+        <option value="Interface" />
         <option value="JUnit5 Test Class" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="add-readme" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sottos&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/sottos/stream-extentions.git&quot;,
+    &quot;accountId&quot;: &quot;a4d3caac-5d5e-4982-9db6-7755ab76f6a7&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;sottos&quot;,
+    &quot;repository&quot;: &quot;stream-extentions&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/AbstractPipeline.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/AbstractSpinedBuffer.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/Gatherer.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/GathererOp.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/Gatherers.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/ReferencePipeline.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/Sink.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/projects/jdk/src/java.base/share/classes/java/util/stream/SpinedBuffer.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.jdks/openjdk-25.0.1/lib/src.zip!/java.base/java/util/stream/Gatherer.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.jdks/openjdk-25.0.1/lib/src.zip!/java.base/java/util/stream/StreamSupport.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2XXaPj4DH6ZtZ6vlzI3Z1Ovw13j" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.Demo.executor": "Run",
+    "Application.GatherTest.executor": "Run",
     "Application.GatherTestTakeWhile.executor": "Run",
     "Application.PatternMatching.executor": "Run",
     "Application.RecordExes.executor": "Run",
-    "Application.SpliteratorEx.executor": "Debug",
+    "Application.SpliteratorEx.executor": "Run",
+    "Application.ZipWithIndex.executor": "Run",
+    "Application.ZipWithIndexUsingCollector.executor": "Run",
+    "Application.ZipWithIndexUsingGatherer.executor": "Run",
+    "Application.ZipWithIndexUsingSpliterator.executor": "Run",
+    "Application.ZipWithIndexUsingZip.executor": "Run",
+    "Application.ZipWithZipISA.executor": "Run",
+    "JUnit.GathererDSLWhileLimitSkipTest.executor": "Run",
+    "JUnit.PipelineTest.executor": "Run",
+    "JUnit.PipelineTest.filterThenMapAsReadme.executor": "Run",
+    "JUnit.PipelineTest.simpleOutput.executor": "Run",
+    "JUnit.PipelineTest.testCombineTwoPipelines.executor": "Run",
+    "JUnit.ZippersTest (1).executor": "Run",
+    "JUnit.ZippersTest.executor": "Run",
+    "JUnit.ZippersTest.joinSomeDataLists.executor": "Run",
+    "JUnit.ZippersTest.zip.executor": "Run",
+    "JUnit.ZippersTest.zipperTest.executor": "Run",
+    "JUnit.ZippersTest.zipperTest2.executor": "Run",
+    "Maven.stream-extentions [clean,install].executor": "Run",
+    "Maven.stream-extentions [clean:clean,install:install].executor": "Run",
+    "Maven.stream-extentions [org.apache.maven.plugins:maven-clean-plugin:3.2.0:clean...].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "git-widget-placeholder": "master",
     "ignore.preview.features.used": "true",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/svein/projects/signws",
+    "last_directory_selection": "C:/Users/svein/IdeaProjects/stream-extentions/src/main/java/org/example/general",
+    "last_opened_file_path": "C:/Users/svein/IdeaProjects/stream-extentions/pom.xml",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "onboarding.tips.debug.path": "C:/Users/svein/IdeaProjects/J21Ex/src/main/java/org/example/Main.java",
-    "project.structure.last.edited": "SDKs",
+    "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "editor.preferences.appearance"
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
@@ -87,23 +136,44 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="no.sottos.zippers.Functions" />
+      <recent name="no.sottos.zippers.MultiZipSpliterator" />
+      <recent name="org.example.zippers.Zippers" />
+      <recent name="org.example.simple.Zippers" />
       <recent name="org.example.GatherEx" />
     </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\svein\IdeaProjects\stream-extentions\src\main\java\org\example\zippers" />
+      <recent name="C:\Users\svein\IdeaProjects\stream-extentions" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="org.example.zippers" />
+      <recent name="org.example.general" />
+      <recent name="org.example.simple" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="no.sottos.gatherer" />
+      <recent name="org.example.zippers" />
+      <recent name="org.example" />
+    </key>
     <key name="CreateTestDialog.RecentsKey">
+      <recent name="org.example.zippers" />
       <recent name="org.example" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.example.zippers" />
+      <recent name="org.example.simple" />
+      <recent name="org.example.mains" />
       <recent name="org.example" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SpliteratorEx">
+  <component name="RunManager" selected="JUnit.PipelineTest.filterThenMapAsReadme">
     <configuration name="GatherTest" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.GatherTestWhereDownStreamPushResultIsNotRespected" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.example.*" />
@@ -116,22 +186,7 @@
     </configuration>
     <configuration name="GatherTestDownStreamHandling" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.GatherTestDownStreamHandling" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.example.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="GatherTestFinisher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.GatherTestFinisher" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.example.*" />
@@ -144,8 +199,7 @@
     </configuration>
     <configuration name="GatherTestTakeWhile" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.GatherTestTakeWhile" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.example.*" />
@@ -156,79 +210,142 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.Main" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
+    <configuration name="GathererDSLWhileLimitSkipTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.example.*" />
+          <option name="PATTERN" value="no.sottos.gatherer.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="no.sottos.gatherer" />
+      <option name="MAIN_CLASS_NAME" value="no.sottos.gatherer.GathererDSLWhileLimitSkipTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PatternMatching" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.PatternMatching" />
-      <module name="J21Ex" />
-      <option name="VM_PARAMETERS" value="--enable-preview" />
+    <configuration name="PipelineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.example.*" />
+          <option name="PATTERN" value="no.sottos.gatherer.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="no.sottos.gatherer" />
+      <option name="MAIN_CLASS_NAME" value="no.sottos.gatherer.PipelineTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RecordExes" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.RecordExes" />
-      <module name="J21Ex" />
+    <configuration name="PipelineTest.filterThenMapAsReadme" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.example.*" />
+          <option name="PATTERN" value="no.sottos.gatherer.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="no.sottos.gatherer" />
+      <option name="MAIN_CLASS_NAME" value="no.sottos.gatherer.PipelineTest" />
+      <option name="METHOD_NAME" value="filterThenMapAsReadme" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SpliteratorEx" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.SpliteratorEx" />
-      <module name="J21Ex" />
+    <configuration name="PipelineTest.simpleOutput" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="stream-extentions" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.example.*" />
+          <option name="PATTERN" value="no.sottos.gatherer.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="no.sottos.gatherer" />
+      <option name="MAIN_CLASS_NAME" value="no.sottos.gatherer.PipelineTest" />
+      <option name="METHOD_NAME" value="simpleOutput" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="ZippersTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="stream-extentions" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="no.sottos.zippers.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="no.sottos.zippers" />
+      <option name="MAIN_CLASS_NAME" value="no.sottos.zippers.ZippersTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="stream-extentions [clean:clean,install:install]" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="cmdOptions" />
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="clean:clean" />
+                <option value="install:install" />
+              </list>
+            </option>
+            <option name="multimoduleDir" />
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="projectsCmdOptionValues">
+              <list />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Application.GatherTest" />
       <item itemvalue="Application.GatherTestDownStreamHandling" />
       <item itemvalue="Application.GatherTestTakeWhile" />
-      <item itemvalue="Application.RecordExes" />
-      <item itemvalue="Application.SpliteratorEx" />
-      <item itemvalue="Application.PatternMatching" />
-      <item itemvalue="Application.GatherTestFinisher" />
-      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.GatherTest" />
+      <item itemvalue="JUnit.PipelineTest.filterThenMapAsReadme" />
+      <item itemvalue="JUnit.GathererDSLWhileLimitSkipTest" />
+      <item itemvalue="JUnit.PipelineTest.simpleOutput" />
+      <item itemvalue="JUnit.PipelineTest" />
+      <item itemvalue="JUnit.ZippersTest" />
+      <item itemvalue="Maven.stream-extentions [clean:clean,install:install]" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SpliteratorEx" />
-        <item itemvalue="Application.RecordExes" />
-        <item itemvalue="Application.PatternMatching" />
-        <item itemvalue="Application.GatherTestFinisher" />
-        <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.PipelineTest.filterThenMapAsReadme" />
+        <item itemvalue="JUnit.GathererDSLWhileLimitSkipTest" />
+        <item itemvalue="JUnit.ZippersTest" />
+        <item itemvalue="JUnit.PipelineTest" />
+        <item itemvalue="JUnit.PipelineTest.simpleOutput" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -237,35 +354,230 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="463efde6-cabe-474f-8762-ed27de2e6f99" name="Changes" comment="" />
+      <changelist id="3dab7b4f-c14c-4c43-b953-d6b50b8a4a61" name="not to be checked in" comment="" />
       <created>1698777865395</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1698777865395</updated>
     </task>
+    <task id="LOCAL−00001" summary="More examples, now with SpliteratorEx">
+      <option name="closed" value="true" />
+      <created>1719869671653</created>
+      <option name="number" value="LOCAL−00001" />
+      <option name="presentableId" value="LOCAL−00001" />
+      <updated>1719869671653</updated>
+    </task>
+    <task id="LOCAL−00002" summary="SpliteratorEx with zip rewritten">
+      <option name="closed" value="true" />
+      <created>1719937042545</created>
+      <option name="number" value="LOCAL−00002" />
+      <option name="presentableId" value="LOCAL−00002" />
+      <updated>1719937042545</updated>
+    </task>
+    <task id="LOCAL−00003" summary="SpliteratorEx with zip rewritten">
+      <option name="closed" value="true" />
+      <created>1719937561784</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1719937561784</updated>
+    </task>
+    <task id="LOCAL−00004" summary="Added Intgenerator">
+      <option name="closed" value="true" />
+      <created>1720004026852</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1720004026852</updated>
+    </task>
+    <task id="LOCAL−00005" summary="Added Zip3">
+      <option name="closed" value="true" />
+      <created>1732305523394</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1732305523394</updated>
+    </task>
+    <task id="LOCAL−00006" summary="Added first variant of ZipGatherer&#10;Can not find a way to terminate an infinite stream active before the gatherer when the integrator returns false.&#10;&#10;ala: &#10;Stream.iterate(1, x -&gt; x + 1).filter(x -&gt; false).findFirst();&#10;&#10;which will not (I think) terminate">
+      <option name="closed" value="true" />
+      <created>1732645538665</created>
+      <option name="number" value="LOCAL−00006" />
+      <option name="presentableId" value="LOCAL−00006" />
+      <updated>1732645538665</updated>
+    </task>
+    <task id="LOCAL−00007" summary="Lagt til collector zip">
+      <option name="closed" value="true" />
+      <created>1733778729911</created>
+      <option name="number" value="LOCAL−00007" />
+      <option name="presentableId" value="LOCAL−00007" />
+      <updated>1733778729911</updated>
+    </task>
+    <task id="LOCAL−00008" summary="Updated to java 24, gatherers not preview anymore&#10;Zippers may use other types then TupX by using a creator function">
+      <option name="closed" value="true" />
+      <created>1747341318431</created>
+      <option name="number" value="LOCAL−00008" />
+      <option name="presentableId" value="LOCAL−00008" />
+      <updated>1747341318431</updated>
+    </task>
+    <task id="LOCAL−00009" summary="Added a new set of zippers (all named zip) is the org.example.zippers package">
+      <option name="closed" value="true" />
+      <created>1748800795029</created>
+      <option name="number" value="LOCAL−00009" />
+      <option name="presentableId" value="LOCAL−00009" />
+      <updated>1748800795029</updated>
+    </task>
+    <task id="LOCAL−00010" summary="Added MultiZippers for spliterator, gatherer and collectors, see example/zippers package">
+      <option name="closed" value="true" />
+      <created>1749579267421</created>
+      <option name="number" value="LOCAL−00010" />
+      <option name="presentableId" value="LOCAL−00010" />
+      <updated>1749579267421</updated>
+    </task>
+    <task id="LOCAL−00011" summary="Java 25">
+      <option name="closed" value="true" />
+      <created>1765304703364</created>
+      <option name="number" value="LOCAL−00011" />
+      <option name="presentableId" value="LOCAL−00011" />
+      <updated>1765304703364</updated>
+    </task>
+    <task id="LOCAL−00012" summary="Comments from coPilot">
+      <option name="closed" value="true" />
+      <created>1765305261409</created>
+      <option name="number" value="LOCAL−00012" />
+      <option name="presentableId" value="LOCAL−00012" />
+      <updated>1765305261409</updated>
+    </task>
+    <task id="LOCAL−00013" summary="Comments from coPilot">
+      <option name="closed" value="true" />
+      <created>1765305666499</created>
+      <option name="number" value="LOCAL−00013" />
+      <option name="presentableId" value="LOCAL−00013" />
+      <updated>1765305666499</updated>
+    </task>
+    <task id="LOCAL−00014" summary="Added some comments">
+      <option name="closed" value="true" />
+      <created>1765306536535</created>
+      <option name="number" value="LOCAL−00014" />
+      <option name="presentableId" value="LOCAL−00014" />
+      <updated>1765306536535</updated>
+    </task>
+    <task id="LOCAL−00015" summary="Cleaned up and started with GathererDSL">
+      <option name="closed" value="true" />
+      <created>1767688708157</created>
+      <option name="number" value="LOCAL−00015" />
+      <option name="presentableId" value="LOCAL−00015" />
+      <updated>1767688708157</updated>
+    </task>
+    <task id="LOCAL−00016" summary="Reduced the whole thing to zippers and GathereDsl.&#10;&#10;Added unittests (got a lot from copilot there)">
+      <option name="closed" value="true" />
+      <created>1772137603383</created>
+      <option name="number" value="LOCAL−00016" />
+      <option name="presentableId" value="LOCAL−00016" />
+      <updated>1772137603383</updated>
+    </task>
+    <task id="LOCAL−00017" summary="Fixed some code analysis warnings">
+      <option name="closed" value="true" />
+      <created>1772137898694</created>
+      <option name="number" value="LOCAL−00017" />
+      <option name="presentableId" value="LOCAL−00017" />
+      <updated>1772137898694</updated>
+    </task>
+    <task id="LOCAL−00018" summary="Added Readme.md">
+      <option name="closed" value="true" />
+      <created>1772177412176</created>
+      <option name="number" value="LOCAL−00018" />
+      <option name="presentableId" value="LOCAL−00018" />
+      <updated>1772177412177</updated>
+    </task>
+    <task id="LOCAL−00019" summary="Fixed example result in .md">
+      <option name="closed" value="true" />
+      <created>1777103022593</created>
+      <option name="number" value="LOCAL−00019" />
+      <option name="presentableId" value="LOCAL−00019" />
+      <updated>1777103022593</updated>
+    </task>
+    <task id="LOCAL−00020" summary="Added distributionmanagement to pom, added publish.yml for github package publishing">
+      <option name="closed" value="true" />
+      <created>1777226110276</created>
+      <option name="number" value="LOCAL−00020" />
+      <option name="presentableId" value="LOCAL−00020" />
+      <updated>1777226110276</updated>
+    </task>
+    <task id="LOCAL−00021" summary="Trying to fix publishing: added maven-deploy-plugin, maven-compiler-plugin to pom.xml.">
+      <option name="closed" value="true" />
+      <created>1777227724185</created>
+      <option name="number" value="LOCAL−00021" />
+      <option name="presentableId" value="LOCAL−00021" />
+      <updated>1777227724185</updated>
+    </task>
+    <task id="LOCAL−00022" summary="Added settings.xml to the publishing maven build using publish.yml">
+      <option name="closed" value="true" />
+      <created>1777228312215</created>
+      <option name="number" value="LOCAL−00022" />
+      <option name="presentableId" value="LOCAL−00022" />
+      <updated>1777228312215</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="More examples, now with SpliteratorEx" />
+    <MESSAGE value="SpliteratorEx with zip rewritten" />
+    <MESSAGE value="Added Intgenerator" />
+    <MESSAGE value="Added Zip3" />
+    <MESSAGE value="Added first variant of ZipGatherer&#10;Can not find a way to terminate an infinite stream active before the gatherer when the integrator returns false.&#10;&#10;ala: &#10;Stream.iterate(1, x -&gt; x + 1).filter(x -&gt; false).findFirst();&#10;&#10;which will not (I think) terminate" />
+    <MESSAGE value="Lagt til collector zip" />
+    <MESSAGE value="Updated to java 24, gatherers not preview anymore&#10;Zippers may use other types then TupX by using a creator function" />
+    <MESSAGE value="Added a new set of zippers (all named zip) is the org.example.zippers package" />
+    <MESSAGE value="Added MultiZippers for spliterator, gatherer and collectors, see example/zippers package" />
+    <MESSAGE value="Java 25" />
+    <MESSAGE value="Comments from coPilot" />
+    <MESSAGE value="Added some comments" />
+    <MESSAGE value="Cleaned up" />
+    <MESSAGE value="Cleaned up and started with GathererDSL" />
+    <MESSAGE value="Reduced the whole thing to zippers and GathereDsl.&#10;&#10;Added unittests (got a lot from copilot there)" />
+    <MESSAGE value="Fixed some code analysis warnings" />
+    <MESSAGE value="Added Readme.md" />
+    <MESSAGE value="Fixed example result in .md" />
+    <MESSAGE value="Added distributionmanagement to pom, added publish.yml for github package publishing" />
+    <MESSAGE value="Trying to fix publishing: added maven-deploy-plugin, maven-compiler-plugin to pom.xml." />
+    <MESSAGE value="Added settings.xml to the publishing maven build using publish.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added settings.xml to the publishing maven build using publish.yml" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/example/Main.java</url>
-          <line>24</line>
+          <line>20</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/example/GatherEx.java</url>
-          <line>70</line>
+          <line>68</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -284,20 +596,34 @@
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/example/PatternMatching.java</url>
-          <line>98</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/example/SpliteratorEx.java</url>
-          <line>106</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>jar://$PROJECT_DIR$/../../../../Program Files/Java/jdk-22.0.1/lib/src.zip!/java.base/java/util/stream/ReferencePipeline.java</url>
           <line>144</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>jar://$PROJECT_DIR$/../../../../Program Files/Java/jdk-23/lib/src.zip!/java.base/java/util/stream/GathererOp.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/../../../../Program Files/Java/jdk-23/lib/src.zip!/java.base/java/util/stream/SliceOps.java</url>
+          <line>209</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/../../../../Program Files/Java/jdk-23/lib/src.zip!/java.base/java/util/stream/SliceOps.java</url>
+          <line>197</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/example/mains/ZipWithIndexUsingCollector.java</url>
+          <line>103</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.ClassCastException" package="java.lang" />
+          <option name="timeStamp" value="36" />
+        </breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
