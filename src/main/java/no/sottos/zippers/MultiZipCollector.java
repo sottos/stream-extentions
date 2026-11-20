@@ -24,10 +24,10 @@ public class MultiZipCollector
     final C collectorToExtend;
     final Iterator<?>[] iterators;
     final Functions.ArgsInArrayFunction<CombinedInput> elementCombiner;
-    final Zippers.ZipWhen zipWhen;
+    final Zippers.ZipUntil until;
 
-    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<CombinedInput> elementCombiner, Zippers.ZipWhen zipWhen) {
-        this.zipWhen = zipWhen;
+    public MultiZipCollector(C collectorToExtend, Stream<?>[] streams, Functions.ArgsInArrayFunction<CombinedInput> elementCombiner, Zippers.ZipUntil until) {
+        this.until = until;
         this.collectorToExtend = collectorToExtend;
         var copy = new HashSet<>(collectorToExtend.characteristics());
         copy.remove(CONCURRENT);
@@ -94,7 +94,7 @@ public class MultiZipCollector
             }
         }
 
-        return (atLeastOneTerminated && zipWhen == Zippers.ZipWhen.WHEN_ALL_HAVE_DATA) ?
+        return (atLeastOneTerminated && until == Zippers.ZipUntil.UNTIL_ONE_STREAM_ENDS) ?
                 null : elementCombiner.apply(streamValues);
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static no.sottos.zippers.Zippers.ZipUntil.UNTIL_ALL_STREAMS_END;
 import static no.sottos.zippers.Zippers.zipped;
 import static no.sottos.zippers.ZippersTest.NumberedString.newNS;
 import static no.sottos.zippers.ZippersTest.Tup3.nTup3;
@@ -23,30 +24,27 @@ class ZippersTest {
                 newNS(4, "Princess"));
 
         var ctorZipped = Zippers.zip(
-                        NumberedString::new,
                         Stream.iterate(1, x -> x + 1),
-                        Stream.of("One", "Two", "Three", "Princess")
+                        Stream.of("One", "Two", "Three", "Princess"),
+                        NumberedString::new
                 )
                 .toList();
         assertEquals(expectedResult, ctorZipped);
 
         var gatherZipped = Stream.of("One", "Two", "Three", "Princess")
                 .gather(Zippers.zipWith(
-                                (s, i) -> new NumberedString(i, s),
-                                Stream.iterate(1, x -> x + 1)
-                        )
-                )
+                        Stream.iterate(1, x -> x + 1),
+                        (s, i) -> new NumberedString(i, s)
+                ))
                 .toList();
         assertEquals(gatherZipped, ctorZipped);
 
-
         var collectorZipped = Stream.of("One", "Two", "Three", "Princess")
                 .collect(Zippers.zipped(
-                                Collectors.toList(),
-                                (s, i) -> new NumberedString(i, s),
-                                Stream.iterate(1, x -> x + 1)
-                        )
-                );
+                        Collectors.toList(),
+                        Stream.iterate(1, x -> x + 1),
+                        (s, i) -> new NumberedString(i, s)
+                ));
         assertEquals(collectorZipped, ctorZipped);
     }
 
@@ -59,40 +57,39 @@ class ZippersTest {
                 nTup3("Three", 3, "King"));
 
         var ctorZipped = Zippers.zip(
-                        Tup3<String, Integer, String>::new,
                         Stream.of("One", "Two", "Three", "Princess"),
                         Stream.iterate(1, x -> x + 1),
-                        Stream.of("OneAndAHalf", "OneAndAHalf", "King")
+                        Stream.of("OneAndAHalf", "OneAndAHalf", "King"),
+                        Tup3<String, Integer, String>::new
                 )
                 .toList();
         assertEquals(expectedResult, ctorZipped);
 
         var gatherZipped = Stream.of("One", "Two", "Three", "Princess")
                 .gather(Zippers.zipWith(
-                        Tup3<String, Integer, String>::new,
                         Stream.iterate(1, x -> x + 1),
-                        Stream.of("OneAndAHalf", "OneAndAHalf", "King"))
-                )
+                        Stream.of("OneAndAHalf", "OneAndAHalf", "King"),
+                        Tup3<String, Integer, String>::new
+                ))
                 .toList();
         assertEquals(expectedResult, gatherZipped);
-
 
         var collectorZipped = Stream.of("One", "Two", "Three", "Princess")
                 .collect(zipped(
                         Collectors.toList(),
-                        Tup3<String, Integer, String>::new,
                         Stream.iterate(1, x -> x + 1),
-                        Stream.of("OneAndAHalf", "OneAndAHalf", "King")
+                        Stream.of("OneAndAHalf", "OneAndAHalf", "King"),
+                        Tup3<String, Integer, String>::new
                 ));
         assertEquals(expectedResult, collectorZipped);
 
         var collectorZipped2 = Stream.of("One", "Two", "Three", "Princess")
                 .collect(zipped(
                         Collectors.toList(),
-                        Tup3<String, Integer, String>::new,
-                        Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA,
                         Stream.iterate(1, x -> x + 1),
-                        Stream.of("OneAndAHalf", "OneAndAHalf", "King")
+                        Stream.of("OneAndAHalf", "OneAndAHalf", "King"),
+                        UNTIL_ALL_STREAMS_END,
+                        Tup3<String, Integer, String>::new
                 ));
         assertEquals(4, collectorZipped2.size());
         assertEquals(nTup3("Princess", 4, null), collectorZipped2.getLast());
@@ -116,21 +113,23 @@ class ZippersTest {
         var houses = List.of("red", "green", "blue");
 
         var zipResult = Zippers.zip(
-                        combineElements,
                         Stream.iterate(1, x -> x + 1),
                         hens.stream(),
                         cats.stream(),
-                        houses.stream())
+                        houses.stream(),
+                        combineElements
+                )
                 .toList();
         assertEquals(expectedResult, zipResult);
 
         // You can use an infinite stream as upstream to the zipWith gatherer, it does not collect anything
         var zipWithResult = Stream.iterate(1, x -> x + 1)
                 .gather(Zippers.zipWith(
-                        combineElements,
                         hens.stream(),
                         cats.stream(),
-                        houses.stream()))
+                        houses.stream(),
+                        combineElements
+                ))
                 .toList();
         assertEquals(expectedResult, zipWithResult);
 
@@ -139,22 +138,24 @@ class ZippersTest {
         var zippedResult = hens.stream()
                 .collect(Zippers.zipped(
                         Collectors.toList(),
-                        // Not same parameter sequence as in 'combinElements' function
-                        (hen, number, cat, house) ->
-                                String.format("Number %d has %d hens, %d cats and a %s house", number, hen, cat, house),
                         Stream.iterate(1, x -> x + 1),
                         cats.stream(),
-                        houses.stream()));
+                        houses.stream(),
+                        // Not same parameter sequence as in 'combineElements' function
+                        (hen, number, cat, house) ->
+                                String.format("Number %d has %d hens, %d cats and a %s house", number, hen, cat, house)
+                ));
         assertEquals(expectedResult, zippedResult);
 
         var collZipped = Stream.iterate(1, x -> x + 1)
                 .limit(3) // Need to stop on at least 3 items, but any number above 3 fits here, zipped terminates
                 .collect(Zippers.zipped(
                         Collectors.toList(),
-                        combineElements,
                         hens.stream(),
                         cats.stream(),
-                        houses.stream()));
+                        houses.stream(),
+                        combineElements
+                ));
         assertEquals(expectedResult, collZipped);
     }
 
@@ -170,5 +171,4 @@ class ZippersTest {
             return new Tup3<>(a, b, c);
         }
     }
-
 }

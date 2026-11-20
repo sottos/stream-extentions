@@ -1,22 +1,22 @@
 package no.sottos.zippers;
 
-import no.sottos.zippers.Zippers.ZipWhen;
+import no.sottos.zippers.Zippers.ZipUntil;
 
 import java.util.Iterator;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
-import static no.sottos.zippers.Zippers.ZipWhen.WHEN_AT_LEAST_ONE_HAVE_DATA;
+import static no.sottos.zippers.Zippers.ZipUntil.UNTIL_ALL_STREAMS_END;
 
 public class MultiZipGatherBody<T, R> {
 
     final Iterator<?>[] iterators;
     final Functions.ArgsInArrayFunction<R> combiner;
-    final ZipWhen zipWhen;
+    final ZipUntil until;
 
-    public MultiZipGatherBody(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, ZipWhen zipWhen) {
+    public MultiZipGatherBody(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, ZipUntil until) {
         this.combiner = combiner;
-        this.zipWhen = zipWhen;
+        this.until = until;
         this.iterators = new Iterator<?>[streams.length];
         for (int i = 0; i < streams.length; ++i) {
             this.iterators[i] = streams[i].iterator();
@@ -46,7 +46,7 @@ public class MultiZipGatherBody<T, R> {
 
             if (allCanAdvance) {
                 return downstream.push(combiner.apply(streamValues));
-            } else if (zipWhen == WHEN_AT_LEAST_ONE_HAVE_DATA) {
+            } else if (until == UNTIL_ALL_STREAMS_END) {
                 // More left of tStream since we have tElement
                 return downstream.push(combiner.apply(streamValues));
             }
@@ -58,7 +58,7 @@ public class MultiZipGatherBody<T, R> {
      * Will be called when either downStream.isRejecting or there are no more tElement to call integrate with.
      */
     public void finish(Gatherer.Downstream<? super R> downStream) {
-        if (zipWhen == WHEN_AT_LEAST_ONE_HAVE_DATA && !downStream.isRejecting()) {
+        if (until == UNTIL_ALL_STREAMS_END && !downStream.isRejecting()) {
             boolean atLeastOneCanAdvance;
             Object[] streamValues = new Object[1 + iterators.length];
             do {

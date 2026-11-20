@@ -1,5 +1,6 @@
 package no.sottos.gatherer;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import no.sottos.gatherer.GathererDSL.Pipeline;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PipelineTest {
 
     // Helper: run a gatherer on a stream and collect to list
-    private static <IN, OUT> List<OUT> run(Gatherer<IN, Void, OUT> g, List<IN> input) {
+    private static <IN, OUT> List<OUT> run(Gatherer<IN, ?, OUT> g, List<IN> input) {
         return input.stream().gather(g).toList();
     }
 
@@ -74,7 +75,7 @@ public class PipelineTest {
     @Test
     void testGather() {
         // A simple stateless gatherer that triples values
-        Gatherer<Integer, Void, Integer> triple =
+        Supplier<Gatherer<Integer, Void, Integer>> triple = () ->
                 Gatherer.of(
                         (_, item, downstream) -> downstream.push(item * 3),
                         (_, _) -> {
