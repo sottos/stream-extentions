@@ -18,35 +18,35 @@ import static no.sottos.zippers.Functions.toArrayArgs;
 /// 2. Merging streams using the intermediate *.gather(...)* operation, the **Zippers.zipWith(...** returning a gatherer.
 /// 3. Merging streams in a collector (terminal operation), the function **Zippers.zipped(...** returning a collector.
 ///
-/// 
+///
 /// ## Spliterator based zippers
 /// - initial operation
 /// - used at start of chain, producing the initial stream
 /// - allows merging of infinite streams
 /// - extracts one element from each stream and combines them into one type, then pushes that element downstream.
 /// - combined stream is sequential
-/// 
-/// ex: 
 ///
-/// **zip((t,u) -> combineTAndUFunc, tStream, uStream).map(r -> handle combined elem).....  etc.**
+/// ex:
+///
+/// **zip(tStream, uStream, (t,u) -> combineTAndUFunc).map(r -> handle combined elem).....  etc.**
 ///
 /// ### Termination criteria for spliterator based zippers
 /// - The combined stream pipeline terminates when the shortest stream is terminated, this is the default.
-/// - Default operation can be overridden using WHEN_AT_LEAST_ONE_HAVE_DATA, which terminates when all streams are empty
-/// 
+/// - Default operation can be overridden using UNTIL_ALL_STREAMS_END, which terminates when all streams are empty
+///
 /// ## Gatherer based zippers
 /// - intermediate operation
 /// - used in the midst of a chain, merging one or more streams with the upstream into the pipeline
 /// - allows merging of infinite streams, the result stream will have at most the length of the upstream stream
 /// - gatherer is sequential
 ///
-/// ex: 
-/// 
-///  **tStream.map(...).gather(zipWith((t,u) -> combineTAndUFunc, uStream)).map(r -> handle combined elem)..... etc.**
+/// ex:
+///
+///  **tStream.map(...).gather(zipWith(uStream, (t,u) -> combineTAndUFunc)).map(r -> handle combined elem)..... etc.**
 ///
 /// ### Termination criteria for gatherer based zippers
 /// - The combined stream pipeline terminates when the shortest stream is terminated, this is the default.
-/// - Default operation can be overridden using WHEN_AT_LEAST_ONE_HAVE_DATA, which terminates when all streams are empty
+/// - Default operation can be overridden using UNTIL_ALL_STREAMS_END, which terminates when all streams are empty
 /// - The combined stream are always under control by the upstream, when empty upstream the combined stream is terminated
 ///
 ///
@@ -56,174 +56,187 @@ import static no.sottos.zippers.Functions.toArrayArgs;
 /// - allows merging of infinite streams, the result stream will have at most the length of the upstream stream
 /// - collector is sequential
 ///
-/// ex: 
+/// ex:
 ///
-///  **stream.collect(zipped(Collectors.toList(), (t,u) -> combine(t,u), streamU))** 
+///  **stream.collect(zipped(Collectors.toList(), streamU, (t,u) -> combine(t,u)))**
 /// - the list will be a list of results from the calls to combine
 ///
-/// ### Termination criteria for gatherer based zippers
+/// ### Termination criteria for collector based zippers
 /// - The combined collector terminates when the shortest stream is terminated, this is the default.
-/// - Default operation can be overridden using WHEN_AT_LEAST_ONE_HAVE_DATA, which terminates when all streams are empty
+/// - Default operation can be overridden using UNTIL_ALL_STREAMS_END, which terminates when all streams are empty
 /// - The combined collector are always under control by the upstream, when empty upstream the combined collector is terminated
-/// 
+///
 public class Zippers {
 
+    /**
+     * Controls when zipping stops relative to stream exhaustion.
+     *
+     * <p>When used with static import the values are self-explanatory at the call site:
+     * <pre>
+     *   zip(personStream, orderStream, UNTIL_ANY_STREAM_ENDS, (person, order) -> ...)
+     *   zip(personStream, orderStream, UNTIL_ALL_STREAMS_END, (person, order) -> ...)
+     * </pre>
+     */
+    public enum ZipUntil {
+        /**
+         * Stop as soon as the shortest stream is exhausted.
+         * Null values are never passed to the combiner.
+         * This is the default behaviour.
+         */
+        UNTIL_ONE_STREAM_ENDS,
+        /**
+         * Continue until all streams are exhausted.
+         * Null is passed to the combiner for any stream that has been exhausted.
+         */
+        UNTIL_ALL_STREAMS_END
+    }
 
-    public enum ZipWhen {
-        /**
-         * The zipping will proceed only when all underlying streams can advance
-         */
-        WHEN_ALL_HAVE_DATA,
-        /**
-         * The zipping will proceed when at least one underlying stream can advance.
-         * When one stream is exhausted, emit null elements for that stream until the others are exhausted
-         */
-        WHEN_AT_LEAST_ONE_HAVE_DATA
-    }
-    
-    // Spliterator based zippers used at pipeline start up, zip((t,u) -> combined(t,u), tStream, uStream)...
-     
-    ///
-    /// Builds a stream where elements from two streams are first combined into one before pushed downstream.
-    /// 
-    /// @param combiner function combining the elements into one
-    /// @param tStream the stream of T's
-    /// @param uStream the stream of U's
-    /// @return a stream with element type R
-    /// @param <T> element type of first stream
-    /// @param <U> element type of second type
-    /// @param <R> combined element
-    /// 
-    public static <T, U, R> Stream<R> zip(Functions.TwoArgs<T, U, R> combiner, Stream<T> tStream, Stream<U> uStream) {
-        return zip(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream);
-    }
+    // Spliterator based zippers used at pipeline start, zip(tStream, uStream, (t,u) -> combined(t,u))...
 
     ///
     /// Builds a stream where elements from two streams are first combined into one before pushed downstream.
+    /// Stops when the shortest stream is exhausted.
     ///
-    /// @param combiner function combining the elements into one
-    /// @param zipWhen when to keep on streaming, when all combined streams or at least one stream still have content.  
     /// @param tStream the stream of T's
     /// @param uStream the stream of U's
+    /// @param combiner function combining the elements into one
     /// @return a stream with element type R
     /// @param <T> element type of first stream
-    /// @param <U> element type of second type
-    /// @param <R> combined element
+    /// @param <U> element type of second stream
+    /// @param <R> combined element type
     ///
-    public static <T, U, R> Stream<R> zip(Functions.TwoArgs<T, U, R> combiner, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream) {
-        return new MultiZipSpliterator.Zip2<>(tStream, uStream, combiner, zipWhen).stream();
+    public static <T, U, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Functions.TwoArgs<T, U, R> combiner) {
+        return zip(tStream, uStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, R> Stream<R> zip(Functions.ThreeArgs<T, U, V, R> combiner, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
-        return zip(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream);
+    ///
+    /// Builds a stream where elements from two streams are first combined into one before pushed downstream.
+    ///
+    /// @param tStream the stream of T's
+    /// @param uStream the stream of U's
+    /// @param until controls whether to stop at the shortest or longest stream
+    /// @param combiner function combining the elements into one
+    /// @return a stream with element type R
+    /// @param <T> element type of first stream
+    /// @param <U> element type of second stream
+    /// @param <R> combined element type
+    ///
+    public static <T, U, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, ZipUntil until, Functions.TwoArgs<T, U, R> combiner) {
+        return new MultiZipSpliterator.Zip2<>(tStream, uStream, combiner, until).stream();
     }
 
-    public static <T, U, V, R> Stream<R> zip(Functions.ThreeArgs<T, U, V, R> combiner, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream) {
-        return new MultiZipSpliterator.Zip3<>(tStream, uStream, vStream, combiner, zipWhen).stream();
+    public static <T, U, V, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Functions.ThreeArgs<T, U, V, R> combiner) {
+        return zip(tStream, uStream, vStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, W, R> Stream<R> zip(Functions.FourArgs<T, U, V, W, R> combiner, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return zip(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream, wStream);
+    public static <T, U, V, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, ZipUntil until, Functions.ThreeArgs<T, U, V, R> combiner) {
+        return new MultiZipSpliterator.Zip3<>(tStream, uStream, vStream, combiner, until).stream();
     }
 
-    public static <T, U, V, W, R> Stream<R> zip(Functions.FourArgs<T, U, V, W, R> combiner, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return new MultiZipSpliterator.Zip4<>(tStream, uStream, vStream, wStream, combiner, zipWhen).stream();
+    public static <T, U, V, W, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Functions.FourArgs<T, U, V, W, R> combiner) {
+        return zip(tStream, uStream, vStream, wStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, W, X, R> Stream<R> zip(Functions.FiveArgs<T, U, V, W, X, R> combiner, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return zip(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, tStream, uStream, vStream, wStream, xStream);
+    public static <T, U, V, W, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, ZipUntil until, Functions.FourArgs<T, U, V, W, R> combiner) {
+        return new MultiZipSpliterator.Zip4<>(tStream, uStream, vStream, wStream, combiner, until).stream();
     }
 
-    public static <T, U, V, W, X, R> Stream<R> zip(Functions.FiveArgs<T, U, V, W, X, R> combiner, ZipWhen zipWhen, Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return new MultiZipSpliterator.Zip5<>(tStream, uStream, vStream, wStream, xStream, combiner, zipWhen).stream();
+    public static <T, U, V, W, X, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, Functions.FiveArgs<T, U, V, W, X, R> combiner) {
+        return zip(tStream, uStream, vStream, wStream, xStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
+    }
+
+    public static <T, U, V, W, X, R> Stream<R> zip(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, ZipUntil until, Functions.FiveArgs<T, U, V, W, X, R> combiner) {
+        return new MultiZipSpliterator.Zip5<>(tStream, uStream, vStream, wStream, xStream, combiner, until).stream();
     }
 
     public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> combiner, Stream<?>... streams) {
-        return new MultiZipSpliterator.ZipX<>(streams, combiner, ZipWhen.WHEN_ALL_HAVE_DATA).stream();
+        return new MultiZipSpliterator.ZipX<>(streams, combiner, ZipUntil.UNTIL_ONE_STREAM_ENDS).stream();
     }
 
-    public static <R> Stream<R> zipX(Functions.ArgsInArrayFunction<R> combiner, ZipWhen zipWhen, Stream<?>... streams) {
-        return new MultiZipSpliterator.ZipX<>(streams, combiner, zipWhen).stream();
+    public static <R> Stream<R> zipX(ZipUntil until, Functions.ArgsInArrayFunction<R> combiner, Stream<?>... streams) {
+        return new MultiZipSpliterator.ZipX<>(streams, combiner, until).stream();
     }
 
-    // Gatherer based zippers, used in the midst of a chain, tStream.gather(zipWith((t,u) -> combine(t,u), uStream)).....
+    // Gatherer based zippers, used in the midst of a chain, tStream.gather(zipWith(uStream, (t,u) -> combine(t,u))).....
 
     ///
-    /// Builds a gatherer where elements from upstream and one other stream is merged before pushed downstream.
+    /// Builds a gatherer where elements from upstream and one other stream are merged before pushed downstream.
+    /// Stops when the shortest stream is exhausted.
+    ///
+    /// - The gatherer is ofSequential type.
+    /// - When the upstream is empty merging is stopped
+    ///
+    /// @param uStream the stream of U's
+    /// @param combiner function combining the elements into one
+    /// @return a gatherer with element type R
+    /// @param <T> element type of upstream
+    /// @param <U> element type of stream to merge into pipeline
+    /// @param <R> combined element type
+    ///
+    public static <T, U, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Functions.TwoArgs<T, U, R> combiner) {
+        return zipWith(uStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
+    }
+
+    ///
+    /// Builds a gatherer where elements from upstream and one other stream are merged before pushed downstream.
     ///
     /// - The gatherer is ofSequential type.
     /// - When the upstream is empty merging is stopped
     ///
-    /// @param combiner function combining the elements into one
     /// @param uStream the stream of U's
-    /// @return a stream with element type R
+    /// @param until controls whether to stop at the shortest or longest stream
+    /// @param combiner function combining the elements into one
+    /// @return a gatherer with element type R
     /// @param <T> element type of upstream
     /// @param <U> element type of stream to merge into pipeline
-    /// @param <R> combined element
+    /// @param <R> combined element type
     ///
-    public static <T, U, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.TwoArgs<T, U, R> combiner, Stream<U> uStream) {
-        return zipWith(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream);
+    public static <T, U, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, ZipUntil until, Functions.TwoArgs<T, U, R> combiner) {
+        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream}, toArrayArgs(combiner), until));
     }
 
-    ///
-    /// Builds a gatherer where elements from upstream and one other stream is merged before pushed downstream.
-    ///
-    /// - The gatherer is ofSequential type.
-    /// - When the upstream is empty merging is stopped
-    ///   
-    /// @param combiner function combining the elements into one
-    /// @param zipWhen when to keep on streaming, when all combined streams or at least one stream still have content.  
-    /// @param uStream the stream of U's
-    /// @return a stream with element type R
-    /// @param <T> element type of upstream
-    /// @param <U> element type of stream to merge into pipeline
-    /// @param <R> combined element
-    ///
-    public static <T, U, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.TwoArgs<T, U, R> combiner, ZipWhen zipWhen, Stream<U> uStream) {
-        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream}, toArrayArgs(combiner), zipWhen));
+    public static <T, U, V, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, Functions.ThreeArgs<T, U, V, R> combiner) {
+        return zipWith(uStream, vStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.ThreeArgs<T, U, V, R> combiner, Stream<U> uStream, Stream<V> vStream) {
-        return zipWith(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream);
+    public static <T, U, V, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, ZipUntil until, Functions.ThreeArgs<T, U, V, R> combiner) {
+        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream}, toArrayArgs(combiner), until));
     }
 
-    public static <T, U, V, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.ThreeArgs<T, U, V, R> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream) {
-        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream}, toArrayArgs(combiner), zipWhen));
+    public static <T, U, V, W, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Functions.FourArgs<T, U, V, W, R> combiner) {
+        return zipWith(uStream, vStream, wStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, W, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.FourArgs<T, U, V, W, R> combiner, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return zipWith(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream);
+    public static <T, U, V, W, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, ZipUntil until, Functions.FourArgs<T, U, V, W, R> combiner) {
+        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream, wStream}, toArrayArgs(combiner), until));
     }
 
-    public static <T, U, V, W, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.FourArgs<T, U, V, W, R> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream, wStream}, toArrayArgs(combiner), zipWhen));
+    public static <T, U, V, W, X, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, Functions.FiveArgs<T, U, V, W, X, R> combiner) {
+        return zipWith(uStream, vStream, wStream, xStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
-    public static <T, U, V, W, X, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.FiveArgs<T, U, V, W, X, R> combiner, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return zipWith(combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream, xStream);
-    }
-
-    public static <T, U, V, W, X, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Functions.FiveArgs<T, U, V, W, X, R> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream, wStream, xStream}, toArrayArgs(combiner), zipWhen));
+    public static <T, U, V, W, X, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipWith(Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, ZipUntil until, Functions.FiveArgs<T, U, V, W, X, R> combiner) {
+        return zipGatherer(() -> new MultiZipGatherBody<>(new Stream<?>[]{uStream, vStream, wStream, xStream}, toArrayArgs(combiner), until));
     }
 
     private static <T, R> Gatherer<T, MultiZipGatherBody<T, R>, R> zipGatherer(Supplier<MultiZipGatherBody<T, R>> multiZipGatherBodySupplier) {
         return Gatherer.ofSequential(
-        multiZipGatherBodySupplier,
-        MultiZipGatherBody::integrate,
-        MultiZipGatherBody::finish
+                multiZipGatherBodySupplier,
+                MultiZipGatherBody::integrate,
+                MultiZipGatherBody::finish
         );
     }
 
-    // Collector based zippers, stream.collect(zipped(Collectors.toList(), (t,u) -> combine(t,u), streamU))
+    // Collector based zippers, stream.collect(zipped(Collectors.toList(), streamU, (t,u) -> combine(t,u)))
 
     ///
     /// Builds a Collector which combines input from upstream and uStream and feeds a given collector with the combined input.
     /// - When the upstream is empty merging or combining is stopped
+    /// Stops when the shortest stream is exhausted.
     ///
     /// @param collectorToExtend collector which will be called with elements of Combined
+    /// @param uStream the stream to combine elements with
     /// @param combiner function combining the elements into one
-    /// @param uStream the stream to combine element with
     /// @return a collector with the same function as collectorToExtend, but which will be fed with Combined elements
     /// @param <T> upstream element type
     /// @param <Combined> type of combining upstream and uStream elements
@@ -234,18 +247,18 @@ public class Zippers {
     ///
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.TwoArgs<T, U, Combined> combiner, Stream<U> uStream) {
-        return zipped(collectorToExtend, combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream);
+    zipped(C collectorToExtend, Stream<U> uStream, Functions.TwoArgs<T, U, Combined> combiner) {
+        return zipped(collectorToExtend, uStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
     ///
     /// Builds a Collector which combines input from upstream and uStream and feeds a given collector with the combined input.
     /// - When the upstream is empty merging or combining is stopped
-    ///  
+    ///
     /// @param collectorToExtend collector which will be called with elements of Combined
+    /// @param uStream the stream to combine elements with
+    /// @param until controls whether to stop at the shortest or longest stream
     /// @param combiner function combining the elements into one
-    /// @param zipWhen when to keep on streaming, when all combined streams or at least one stream still have content.
-    /// @param uStream the stream to combine element with
     /// @return a collector with the same function as collectorToExtend, but which will be fed with Combined elements
     /// @param <T> upstream element type
     /// @param <Combined> type of combining upstream and uStream elements
@@ -253,67 +266,66 @@ public class Zippers {
     /// @param <Accumulator> accumulator type of the collectorToExtend
     /// @param <C> type of collectorToExtend using Combined input
     /// @param <U> type of elements in uStream
-    /// 
+    ///
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.TwoArgs<T, U, Combined> combiner, ZipWhen zipWhen, Stream<U> uStream) {
+    zipped(C collectorToExtend, Stream<U> uStream, ZipUntil until, Functions.TwoArgs<T, U, Combined> combiner) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream},
                 toArrayArgs(combiner),
-                zipWhen
+                until
         );
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.ThreeArgs<T, U, V, Combined> combiner, Stream<U> uStream, Stream<V> vStream) {
-        return zipped(collectorToExtend, combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream);
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, Functions.ThreeArgs<T, U, V, Combined> combiner) {
+        return zipped(collectorToExtend, uStream, vStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.ThreeArgs<T, U, V, Combined> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream) {
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, ZipUntil until, Functions.ThreeArgs<T, U, V, Combined> combiner) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream},
                 toArrayArgs(combiner),
-                zipWhen
+                until
         );
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V, W>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.FourArgs<T, U, V, W, Combined> combiner, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
-        return zipped(collectorToExtend, combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream);
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Functions.FourArgs<T, U, V, W, Combined> combiner) {
+        return zipped(collectorToExtend, uStream, vStream, wStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V, W>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.FourArgs<T, U, V, W, Combined> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream) {
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, ZipUntil until, Functions.FourArgs<T, U, V, W, Combined> combiner) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream, wStream},
                 toArrayArgs(combiner),
-                zipWhen
+                until
         );
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V, W, X>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.FiveArgs<T, U, V, W, X, Combined> combiner, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
-        return zipped(collectorToExtend, combiner, ZipWhen.WHEN_ALL_HAVE_DATA, uStream, vStream, wStream, xStream);
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, Functions.FiveArgs<T, U, V, W, X, Combined> combiner) {
+        return zipped(collectorToExtend, uStream, vStream, wStream, xStream, ZipUntil.UNTIL_ONE_STREAM_ENDS, combiner);
     }
 
     public static <T, Combined, R, Accumulator, C extends Collector<Combined, Accumulator, R>, U, V, W, X>
     Collector<T, MultiZipCollector.ExtendedState<Accumulator>, R>
-    zipped(C collectorToExtend, Functions.FiveArgs<T, U, V, W, X, Combined> combiner, ZipWhen zipWhen, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream) {
+    zipped(C collectorToExtend, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, ZipUntil until, Functions.FiveArgs<T, U, V, W, X, Combined> combiner) {
         return new MultiZipCollector<>(
                 collectorToExtend,
                 new Stream<?>[]{uStream, vStream, wStream, xStream},
                 toArrayArgs(combiner),
-                zipWhen
+                until
         );
     }
-
 }

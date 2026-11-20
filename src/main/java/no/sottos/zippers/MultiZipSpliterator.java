@@ -8,20 +8,20 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static no.sottos.zippers.Functions.toArrayArgs;
-import static no.sottos.zippers.Zippers.ZipWhen.WHEN_ALL_HAVE_DATA;
+import static no.sottos.zippers.Zippers.ZipUntil.UNTIL_ONE_STREAM_ENDS;
 
 class MultiZipSpliterator<R> implements Spliterator<R> {
 
     private final StreamState<?>[] streamStates;
-    private final Zippers.ZipWhen zipWhen;
+    private final Zippers.ZipUntil until;
     private final Functions.ArgsInArrayFunction<R> combiner;
 
-    public MultiZipSpliterator(Spliterator<?>[] spliterators, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipWhen zipWhen) {
+    public MultiZipSpliterator(Spliterator<?>[] spliterators, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipUntil until) {
         streamStates = new StreamState[spliterators.length];
         for (int i = 0; i < streamStates.length; ++i) {
             streamStates[i] = new StreamState<>(spliterators[i]);
         }
-        this.zipWhen = zipWhen;
+        this.until = until;
         this.combiner = combiner;
     }
 
@@ -41,7 +41,7 @@ class MultiZipSpliterator<R> implements Spliterator<R> {
             return false;
         }
         if (!allCanAdvance) {
-            if (zipWhen == WHEN_ALL_HAVE_DATA) {
+            if (until == UNTIL_ONE_STREAM_ENDS) {
                 return false;
             }
         }
@@ -98,11 +98,11 @@ class MultiZipSpliterator<R> implements Spliterator<R> {
     private static abstract class Zip<R> {
         MultiZipSpliterator<R> zipper;
 
-        private Zip(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipWhen zipWhen) {
+        private Zip(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipUntil until) {
             zipper = new MultiZipSpliterator<>
                     (Arrays.stream(streams).map(s -> (Spliterator<?>) s.spliterator()).toArray(Spliterator<?>[]::new),
                             combiner,
-                            zipWhen);
+                            until);
         }
 
         public Stream<R> stream() {
@@ -111,40 +111,40 @@ class MultiZipSpliterator<R> implements Spliterator<R> {
     }
 
     static class Zip2<T, U, R> extends Zip<R> {
-        Zip2(Stream<T> tStream, Stream<U> uStream, Functions.TwoArgs<T, U, R> combiner, Zippers.ZipWhen zipWhen) {
+        Zip2(Stream<T> tStream, Stream<U> uStream, Functions.TwoArgs<T, U, R> combiner, Zippers.ZipUntil until) {
             super(new Stream<?>[]{tStream, uStream},
                     toArrayArgs(combiner),
-                    zipWhen);
+                    until);
         }
     }
 
     static class Zip3<T, U, V, R> extends Zip<R> {
-        Zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Functions.ThreeArgs<T, U, V, R> combiner, Zippers.ZipWhen zipWhen) {
+        Zip3(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Functions.ThreeArgs<T, U, V, R> combiner, Zippers.ZipUntil until) {
             super(new Stream<?>[]{tStream, uStream, vStream},
                     toArrayArgs(combiner),
-                    zipWhen);
+                    until);
         }
     }
 
     static class Zip4<T, U, V, W, R> extends Zip<R> {
-        Zip4(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Functions.FourArgs<T, U, V, W, R> combiner, Zippers.ZipWhen zipWhen) {
+        Zip4(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Functions.FourArgs<T, U, V, W, R> combiner, Zippers.ZipUntil until) {
             super(new Stream<?>[]{tStream, uStream, vStream, wStream},
                     toArrayArgs(combiner),
-                    zipWhen);
+                    until);
         }
     }
 
     static class Zip5<T, U, V, W, X, R> extends Zip<R> {
-        Zip5(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, Functions.FiveArgs<T, U, V, W, X, R> combiner, Zippers.ZipWhen zipWhen) {
+        Zip5(Stream<T> tStream, Stream<U> uStream, Stream<V> vStream, Stream<W> wStream, Stream<X> xStream, Functions.FiveArgs<T, U, V, W, X, R> combiner, Zippers.ZipUntil until) {
             super(new Stream<?>[]{tStream, uStream, vStream, wStream, xStream},
                     toArrayArgs(combiner),
-                    zipWhen);
+                    until);
         }
     }
 
     static class ZipX<R> extends Zip<R> {
-        ZipX(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipWhen zipWhen) {
-            super(streams, combiner, zipWhen);
+        ZipX(Stream<?>[] streams, Functions.ArgsInArrayFunction<R> combiner, Zippers.ZipUntil until) {
+            super(streams, combiner, until);
         }
     }
 }

@@ -191,8 +191,11 @@ public final class GathererDSL {
     ///
     /// Builds a gatherer which is a combination of other gatherers, a pipeline that can be used as a variable.
     ///
-    /// The inbetween gatherers should be stateless, if the chain held an internal state, then the pipeline
-    /// expression could only be used once.
+    /// The inbetween gatherers does not have to be stateless, since the gatherer chain is created anew each time
+    /// the toGatherer is called.
+    ///
+    /// Remark that stateful elements should be created anew, so a Pipeline with a filter element
+    /// where the predicate itself is stateful and created outside the pipeline will not be safe to reuse.
     ///
     /// - Generation
     ///    - Gatherer<X,Y> p = Pipeline.<>start().map(...).filter(...).peek(debugLog).map(...).build;
@@ -209,58 +212,50 @@ public final class GathererDSL {
 
     public static final class Pipeline<IN, OUT> {
 
-        private final Gatherer<IN, Void, OUT> pipeLine;
+        private final Supplier<Gatherer<IN, ?, OUT>> thisGatherer;
 
-        private Pipeline(Gatherer<IN, Void, OUT> p) {
-            this.pipeLine = p;
+        private Pipeline(Supplier<Gatherer<IN, ?, OUT>> p) {
+            this.thisGatherer = p;
         }
 
         // Start: identity-pipeline IN -> IN
         public static <IN> Pipeline<IN, IN> start() {
-            return new Pipeline<>(GathererDSL.identity());
+            return new Pipeline<>(GathererDSL::identity);
         }
 
         // filter: keeps the OUT-type <IN, OUT> -> <IN, OUT>
         public Pipeline<IN, OUT> filter(Predicate<? super OUT> predicate) {
-            return new Pipeline<>(chainStateless(pipeLine, GathererDSL.filter(predicate)));
+            return new Pipeline<>(() -> thisGatherer.get().andThen(GathererDSL.filter(predicate)));
         }
 
         // map: changes OUT-type <IN, OUT> -> <IN, U>
         public <U> Pipeline<IN, U> map(Function<? super OUT, ? extends U> f) {
-            return new Pipeline<>(chainStateless(pipeLine, GathererDSL.map(f)));
+            return new Pipeline<>(() -> thisGatherer.get().andThen(GathererDSL.map(f)));
         }
 
         // flatMap: changes the OUT-type to U
         public <U> Pipeline<IN, U> flatMap(Function<? super OUT, ? extends Stream<? extends U>> f) {
-            return new Pipeline<>(chainStateless(pipeLine, GathererDSL.flatMap(f)));
+            return new Pipeline<>(() -> thisGatherer.get().andThen(GathererDSL.flatMap(f)));
         }
 
         // peek: keeps the OUT-type
         public Pipeline<IN, OUT> peek(Consumer<? super OUT> consumer) {
-            return new Pipeline<>(chainStateless(pipeLine, GathererDSL.peek(consumer)));
+            return new Pipeline<>(() -> thisGatherer.get().andThen(GathererDSL.peek(consumer)));
         }
 
         // gather: changes the OUT-type to U
-        public <U> Pipeline<IN, U> gather(Gatherer<OUT, Void, U> gatherer) {
-            return new Pipeline<>(chainStateless(pipeLine, gatherer));
+        public <U> Pipeline<IN, U> gather(Supplier<? extends Gatherer<OUT, ?, U>> gatherer) {
+            return new Pipeline<>(() -> thisGatherer.get().andThen(gatherer.get()));
         }
 
         // finished pipeline or just access the inner pipeLine: IN -> OUT
-        public Gatherer<IN, Void, OUT> toGatherer() {
-            return pipeLine;
+        public Gatherer<IN, ?, OUT> toGatherer() {
+            return thisGatherer.get();
         }
 
         // Chaining two pipelines
         public <U> Pipeline<IN, U> then(Pipeline<OUT, U> next) {
-            return new Pipeline<>(chainStateless(this.toGatherer(), next.toGatherer()));
-        }
-        // Helper for requiring the state type for chaining gatherers to be Void
-
-        @SuppressWarnings("unchecked")
-        private static <IN, FIRSTOUT, OUT> Gatherer<IN, Void, OUT> chainStateless(
-                Gatherer<IN, Void, FIRSTOUT> first,
-                Gatherer<? super FIRSTOUT, Void, OUT> second) {
-            return (Gatherer<IN, Void, OUT>) first.andThen(second);
+            return new Pipeline<>(() -> this.toGatherer().andThen(next.toGatherer()));
         }
     }
 }
